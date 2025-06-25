@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Traits;
+
+use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+trait BelongsToManyUsers {
+    public function users(): User {
+        return $this->roleRelation;
+    }
+
+    public function userRelation(): BelongsToMany {
+        return $this->belongsToMany(User::class);
+    }
+
+    // public function isActingAs(User $user): bool {
+    //     return $this->roles()->matches($role);
+    // }
+
+    // public function actingAs(Role $role) {
+    //     return $this->roleRelation()->associate($role);
+    // }
+}
