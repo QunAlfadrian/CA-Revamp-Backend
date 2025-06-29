@@ -15,6 +15,16 @@ class Fund extends Model {
     public $keyType = 'string';
     public $incrementing = 'false';
 
+    protected $fillable = [
+        'id',
+        'campaign_id',
+        'donation_id',
+        'amount',
+        'status',
+        'snap_token',
+        'redirect_url'
+    ];
+
     public function id(): string {
         return $this->id;
     }

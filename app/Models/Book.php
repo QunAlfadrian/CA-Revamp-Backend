@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Book extends Model {
     use HasFactory;
 
+    public $primaryKey = 'isbn';
     public $keyType = 'string';
     public $incrementing = 'false';
 

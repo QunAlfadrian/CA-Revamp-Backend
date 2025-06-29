@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToManyBooks;
 use App\Traits\HasManyDonations;
 use App\Traits\HasManyFunds;
 use App\Traits\HasOrganizer;
@@ -20,6 +21,7 @@ class Campaign extends Model {
     use HasReviewer;
     use HasManyFunds;
     use HasManyDonations;
+    use BelongsToManyBooks;
 
     public $keyType = 'string';
     public $incrementing = 'false';

@@ -11,9 +11,6 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
 class Donation extends Model {
-    public $keyType = 'string';
-    public $incrementing = 'false';
-
     /** Model Helpers */
     use ModelHelpers;
 
@@ -22,12 +19,28 @@ class Donation extends Model {
     use HasDonor;
     use HasCampaign;
 
+    public $keyType = 'string';
+    public $incrementing = 'false';
+
     public static function booted() {
         parent::boot();
 
         static::creating(function ($model) {
             $model->id = Str::uuid();
         });
+    }
+
+    protected $fillable = [
+        'donor_id',
+        'campaign_id',
+        'type',
+        'verified_at'
+    ];
+
+    public function casts(): array {
+        return [
+            'verified_at' => 'datetime'
+        ];
     }
 
     public function id(): string {
