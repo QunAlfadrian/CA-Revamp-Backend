@@ -12,7 +12,7 @@ return new class extends Migration {
         Schema::create('requested_books', function (Blueprint $table) {
             $table->foreignUuid('campaign_id')->constrained()->cascadeOnDelete();
             $table->string('book_id', 13);
-            $table->unsignedSmallInteger('quantity')->default(0);
+            $table->unsignedSmallInteger('requested_quantity')->default(0);
             $table->unsignedSmallInteger('donated_quantity')->default(0);
 
             $table->foreign('book_id')->references('isbn')->on('books')->cascadeOnDelete();

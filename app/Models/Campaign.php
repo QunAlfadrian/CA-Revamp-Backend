@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToManyBooks;
 use App\Traits\HasManyDonations;
 use App\Traits\HasManyFunds;
+use App\Traits\HasManyRequestedSupplies;
 use App\Traits\HasOrganizer;
 use App\Traits\HasReviewer;
 use Illuminate\Support\Str;
@@ -22,6 +23,7 @@ class Campaign extends Model {
     use HasManyFunds;
     use HasManyDonations;
     use BelongsToManyBooks;
+    use HasManyRequestedSupplies;
 
     public $keyType = 'string';
     public $incrementing = 'false';
@@ -42,6 +44,10 @@ class Campaign extends Model {
         'description',
         'header_image_url',
         'status',
+        'requested_fund_amount',
+        'donated_fund_amount',
+        'requested_item_quantity',
+        'donated_item_quantity',
         'reviewed_by',
         'reviewed_at'
     ];

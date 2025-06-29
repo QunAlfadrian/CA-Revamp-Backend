@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->foreignUuid('donation_id')->constrained(
                 'donations', 'id'
             );
-            $table->decimal('amount', 20, 2)->default(5000);
+            $table->decimal('amount', 10, 0)->default(5000);
             $table->string('status')->default('pending');
             $table->string('snap_token', 36)->nullable();
             $table->string('redirect_url', 75)->nullable();

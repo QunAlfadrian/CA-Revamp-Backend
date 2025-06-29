@@ -12,7 +12,7 @@ trait BelongsToManyBooks {
 
     public function booksRelation(): BelongsToMany {
         return $this->belongsToMany(Book::class, 'requested_books', 'campaign_id', 'book_id')
-            ->withPivot(['quantity', 'donated_quantity'])->withTimeStamps();
+            ->withPivot(['requested_quantity', 'donated_quantity'])->withTimeStamps();
     }
 
     public function isRequesting(Book $book) {
@@ -39,9 +39,9 @@ trait BelongsToManyBooks {
         }
 
         // if laready requesting the book, update the pivot
-        $quantity = $this->books()->where('isbn', $book->isbn())->first()->pivot->quantity;
+        $quantity = $this->books()->where('isbn', $book->isbn())->first()->pivot->requested_quantity;
         $this->booksRelation()->updateExistingPivot($book->isbn(), [
-            'quantity' => $quantity + $amount
+            'requested_quantity' => $quantity + $amount
         ]);
     }
 }
