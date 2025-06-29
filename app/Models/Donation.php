@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasCampaign;
 use App\Traits\HasDonation;
 use App\Traits\HasDonor;
+use App\Traits\HasManyDonatedItems;
 use App\Traits\HasManyFunds;
 use App\Traits\ModelHelpers;
 use Illuminate\Support\Str;
@@ -16,6 +17,7 @@ class Donation extends Model {
 
     /** Relation Helpers */
     use HasManyFunds;
+    use HasManyDonatedItems;
     use HasDonor;
     use HasCampaign;
 
@@ -52,6 +54,6 @@ class Donation extends Model {
     }
 
     public function verifiedAt(): string {
-        return $this->verified_at ? $this->verified_at->format('d-m-Y H-i-s') : '';
+        return $this->verified_at ? $this->verified_at->format('d-m-Y H:i:s') : '';
     }
 }

@@ -19,11 +19,14 @@ return new class extends Migration {
             $table->enum('status', [
                 'pending_verification',
                 'on_delivery',
-                'delivered',
+                'received',
                 'not_received',
                 'cancelled'
-            ]);
+            ])->default('pending_verification');
             $table->foreignUuid('campaign_id')->nullable();
+            $table->uuid('reviewed_by')->nullable()->default(null);
+            $table->timestamp('reviewed_at')->nullable()->default(null);
+            $table->foreign('reviewed_by')->references('id')->on('users');
             $table->timestamps();
         });
     }

@@ -3,19 +3,21 @@
 namespace App\Models;
 
 use App\Traits\HasCampaign;
+use App\Traits\HasDonation;
 use App\Traits\HasReviewer;
 use Illuminate\Support\Str;
 use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class RequestedSupply extends Model {
+class DonatedItem extends Model {
     /** Model Helpers */
     use HasFactory;
     use ModelHelpers;
 
     /** Relationship Helpers */
     use HasCampaign;
+    use HasDonation;
     use HasReviewer;
 
     public $keyType = 'string';
@@ -30,41 +32,38 @@ class RequestedSupply extends Model {
     }
 
     protected $fillable = [
-        'name',
-        'description',
-        'price',
-        'requested_quantity',
-        'donated_quantity',
-        'status',
         'campaign_id',
-        'last_reviewed_by',
-        'last_reviewed_at'
+        'donor_id',
+        'donated_item_quantity',
+        'package_picture_url',
+        'delivery_service',
+        'resi',
+        'status'
     ];
 
-    public function name(): string {
-        return $this->name;
+    public function id(): string {
+        return $this->id;
     }
 
-    public function description(): string {
-        return $this->description;
+    public function donatedItemQuantity(): string {
+        return (string)$this->donated_item_quantity;
     }
 
-    public function price(): string {
-        return (string)$this->price;
+    public function packagePictureUrl(): string {
+        return $this->package_picture_url;
     }
 
-    public function requestedQuantity(): string {
-        return (string)$this->requested_quantity;
+    public function deliveryService(): string {
+        return $this->delivery_service;
     }
 
-    public function donatedQuantity(): string {
-        return (string)$this->donated_quantity;
+    public function resi(): string {
+        return $this->resi;
     }
 
     public function status(): string {
         return $this->status;
     }
-
 
     public function createdAt(): string {
         return $this->created_at ? $this->created_at->format('d-m-Y H:i:s') : '';
@@ -73,5 +72,4 @@ class RequestedSupply extends Model {
     public function updatedAt(): string {
         return $this->updated_at ? $this->updated_at->format('d-m-Y H:i:s') : '';
     }
-
 }

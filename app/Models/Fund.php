@@ -3,14 +3,18 @@
 namespace App\Models;
 
 use App\Traits\HasCampaign;
+use App\Traits\HasDonation;
 use App\Traits\ModelHelpers;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Fund extends Model {
+    use HasFactory;
     use ModelHelpers;
 
     /** Relation Helpers */
     use HasCampaign;
+    use HasDonation;
 
     public $keyType = 'string';
     public $incrementing = 'false';
