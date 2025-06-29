@@ -36,16 +36,24 @@ class AuthController extends Controller {
             ->where('email', $request->email)->first();
         $user->actingAs($role);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken($user->name())->plainTextToken;
 
         return response()->json([
-            'data' => $user,
-            'access_token' => $token,
-            'token_type' => 'Bearer'
+            'success' => true,
+            'data' => [
+                'token' => $token,
+                'name' => $user->name(),
+            ],
+            'message' => 'Successfully signed up!',
         ]);
     }
 
     public function login(Request $request) {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'message' => 'Unauthorized'
@@ -54,19 +62,23 @@ class AuthController extends Controller {
 
         $user = User::where('email', $request->email)->firstOrFail();
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken($user->name())->plainTextToken;
 
         return response()->json([
-            'message' => 'Login success',
-            'access_token' => $token,
-            'token_type' => 'Bearer'
+            'success' => true,
+            'data' => [
+                'token' => $token,
+                'name' => $user->name(),
+            ],
+            'message' => 'User logged in!',
         ]);
     }
 
     public function logout() {
         Auth::user()->tokens()->delete();
         return response()->json([
-            'message' => 'logout success'
+            'success' => true,
+            'message' => 'User logged out!'
         ]);
     }
 }

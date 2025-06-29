@@ -13,21 +13,21 @@ class Book extends Model {
     public $incrementing = 'false';
 
     protected $fillable = [
-
+        'isbn',
+        'title',
+        'synopsis',
+        'author_1',
+        'author_2',
+        'author_3',
+        'published_year',
+        'cover_image_url',
+        'price'
     ];
 
     protected function casts(): array {
         return [
-
+            'created_at' => 'datetime'
         ];
-    }
-
-    public static function booted() {
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->id = Str::uuid();
-        });
     }
 
     public function id(): string {

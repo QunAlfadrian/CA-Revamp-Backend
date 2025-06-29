@@ -7,6 +7,10 @@ namespace App\Models;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\BelongsToManyRoles;
+use App\Traits\HasManyCampaigns;
+use App\Traits\HasManyDonations;
+use App\Traits\ModelHelpers;
+use App\Traits\ReviewManyCampaigns;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -16,7 +20,19 @@ class User extends Authenticatable {
     use HasApiTokens;
 	use HasFactory;
 	use Notifiable;
+    use ModelHelpers;
+
+    /** Relation Helpers */
     use BelongsToManyRoles;
+
+    /** Admin Relation */
+    use ReviewManyCampaigns;
+
+    /** Organizer Relation */
+    use HasManyCampaigns;
+
+    /** Donor Relation */
+    use HasManyDonations;
 
     public $keyType = 'string';
     public $incrementing = 'false';

@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('author_2', 255)->nullable();
             $table->string('author_3', 255)->nullable();
             $table->string('published_year', 4)->nullable();
-            $table->string('cover_image_url')->nullable();
+            $table->text('cover_image_url')->nullable();
             $table->decimal('price', 10, 2);
             $table->timestamps();
         });
