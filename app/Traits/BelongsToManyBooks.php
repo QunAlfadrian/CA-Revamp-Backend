@@ -15,12 +15,12 @@ trait BelongsToManyBooks {
             ->withPivot(['requested_quantity', 'donated_quantity'])->withTimeStamps();
     }
 
-    public function isRequesting(Book $book) {
+    public function isRequestingBook(Book $book) {
         return $this->books()->contains($book);
     }
 
     public function donateBook(Book $book, int $amount = 1) {
-        if (!$this->isRequesting($book)) {
+        if (!$this->isRequestingBook($book)) {
             throw new \Exception('Cannot donate to non requested book');
         }
 
@@ -32,9 +32,9 @@ trait BelongsToManyBooks {
 
     public function requestBook(Book $book, int $amount = 1) {
         // if not already requesting the book, create a new pivot
-        if (!$this->isRequesting($book)) {
+        if (!$this->isRequestingBook($book)) {
             return $this->booksRelation()->attach($book->isbn, [
-                'quantity' => $amount
+                'requested_quantity' => $amount
             ]);
         }
 

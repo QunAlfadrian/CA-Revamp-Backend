@@ -14,7 +14,7 @@ trait HasManyRequestedSupplies {
         return $this->hasMany(RequestedSupply::class);
     }
 
-    public function isRequesting(RequestedSupply $supply): bool {
+    public function isRequestingSupply(RequestedSupply $supply): bool {
         return $this->requestedSupplies()->contains($supply);
     }
 
