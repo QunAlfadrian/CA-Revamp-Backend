@@ -6,7 +6,7 @@ use App\Models\Role;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait BelongsToManyRoles {
-    public function roles(): Role {
+    public function roles() {
         return $this->roleRelation;
     }
 
@@ -15,7 +15,7 @@ trait BelongsToManyRoles {
     }
 
     public function isActingAs(Role $role): bool {
-        return $this->roles()->matches($role);
+        return $this->roles()->contains($role);
     }
 
     public function actingAs(Role $role) {

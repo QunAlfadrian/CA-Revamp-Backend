@@ -6,8 +6,8 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait BelongsToManyUsers {
-    public function users(): User {
-        return $this->roleRelation;
+    public function users() {
+        return $this->userRelation;
     }
 
     public function userRelation(): BelongsToMany {

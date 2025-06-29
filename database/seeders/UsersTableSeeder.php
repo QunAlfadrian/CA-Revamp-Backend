@@ -13,9 +13,9 @@ class UsersTableSeeder extends Seeder {
      * Run the database seeds.
      */
     public function run(): void {
-        User::factory()->count(5)->create();
+        User::factory()->count(10)->create();
         $role = Role::where('name', 'donor')->first();
-        $users = User::latest()->limit(5)->get();
+        $users = User::all();
         foreach ($users as $user) {
             $user->actingAs($role);
         }
