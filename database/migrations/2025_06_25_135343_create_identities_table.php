@@ -11,13 +11,15 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('identities', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->foreignUuid('user_id')->constrained(
+                'users', 'id'
+            );
             $table->string('full_name', 127);
             $table->string('phone_number', 15)->nullable();
             $table->enum('gender', [
                 'male',
                 'female',
-                'other',
-                'none'
+                'other'
             ])->default(null)->nullable();
             $table->text('profile_image_url')->nullable();
             $table->date('date_of_birth')->nullable();

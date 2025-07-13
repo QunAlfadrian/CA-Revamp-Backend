@@ -13,6 +13,14 @@ class UsersTableSeeder extends Seeder {
      * Run the database seeds.
      */
     public function run(): void {
+        $user = User::create([
+            'name' => 'admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('admin')
+        ]);
+        $user = User::where('email', 'admin@example.com')->first();
+        $user->actingAs(Role::admin());
+        
         User::factory()->count(10)->create();
         $role = Role::where('name', 'donor')->first();
         $users = User::all();

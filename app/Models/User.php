@@ -4,14 +4,17 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Traits\HasIdentity;
 use Illuminate\Support\Str;
-use Laravel\Sanctum\HasApiTokens;
-use App\Traits\BelongsToManyRoles;
+use App\Traits\ModelHelpers;
 use App\Traits\HasManyCampaigns;
 use App\Traits\HasManyDonations;
-use App\Traits\ModelHelpers;
+use Laravel\Sanctum\HasApiTokens;
+use App\Traits\BelongsToManyRoles;
+use App\Traits\HasOrganizerApplication;
 use App\Traits\ReviewManyCampaigns;
 use Illuminate\Notifications\Notifiable;
+use App\Traits\ReviewManyOrganizerApplications;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -27,12 +30,15 @@ class User extends Authenticatable {
 
     /** Admin Relation */
     use ReviewManyCampaigns;
+    use ReviewManyOrganizerApplications;
 
     /** Organizer Relation */
     use HasManyCampaigns;
 
     /** Donor Relation */
     use HasManyDonations;
+    use HasIdentity;
+    use HasOrganizerApplication;
 
     public $keyType = 'string';
     public $incrementing = 'false';

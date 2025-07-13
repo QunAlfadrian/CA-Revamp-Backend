@@ -31,10 +31,9 @@ class AuthController extends Controller {
             'password' => Hash::make($request->password),
         ]);
 
-        $role = Role::where('name', 'donor')->first();
         $user = User::where('name', $request->name)
             ->where('email', $request->email)->first();
-        $user->actingAs($role);
+        $user->actingAs(Role::donor());
 
         $token = $user->createToken($user->name())->plainTextToken;
 

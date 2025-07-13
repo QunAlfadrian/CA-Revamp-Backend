@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\HasUser;
 use Illuminate\Support\Str;
 use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Model;
 
 class Identity extends Model {
     use ModelHelpers;
+
+    /* Relationship Helpers */
+    use HasUser;
 
     public $keyType = 'string';
     public $incrementing = 'false';
@@ -42,26 +46,30 @@ class Identity extends Model {
     }
 
     public function fullName(): string {
-        return $this->fullName;
+        return $this->full_name;
     }
 
-    public function phoneNumber(): string {
-        return $this->phone_number ? $this->phone_number : '';
+    public function phoneNumber(): ?string {
+        return $this->phone_number ? $this->phone_number : null;
     }
 
-    public function gender(): string {
-        return $this->gender ? $this->gender : '';
+    public function gender(): ?string {
+        return $this->gender ? $this->gender : null;
     }
 
-    public function dateOfBirth(): string {
-        return $this->date_of_birth ? $this->date_of_birth->format('d-m-Y') : '';
+    public function dateOfBirth(): ?string {
+        return $this->date_of_birth ? $this->date_of_birth->format('d-m-Y') : null;
     }
 
-    public function nik(): string {
-        return $this->nik ? $this->nik : '';
+    public function nik(): ?string {
+        return $this->nik ? $this->nik : null;
     }
 
-    public function idCardImageUrl(): string {
-        return $this->id_card_image_url ? $this->id_card_image_url : '';
+    public function profileImageUrl(): ?string {
+        return $this->profile_image_url ? $this->profile_image_url : null;
+    }
+
+    public function idCardImageUrl(): ?string {
+        return $this->id_card_image_url ? $this->id_card_image_url : null;
     }
 }

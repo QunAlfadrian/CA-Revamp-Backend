@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait HasReviewer {
-    public function reviewer(): User {
+    public function reviewer(): ?User {
         return $this->reviewerRelation;
     }
 
@@ -19,7 +19,7 @@ trait HasReviewer {
     }
 
     public function reviewedBy(User $user) {
-        return $this->reviewerRelation()->associate($user);
+        return $this->reviewerRelation()->associate($user)->save();
     }
 
     public function reviewerName(): string {
