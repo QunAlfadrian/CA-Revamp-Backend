@@ -67,7 +67,7 @@ class OrganizerApplicationController extends Controller {
             $paginated = $this->paginateService->paginateCollection(
                 $result,
                 request()->input('page', 1),
-                1
+                10
             );
 
             return new OrganizerApplicationCollection($paginated);
@@ -82,8 +82,18 @@ class OrganizerApplicationController extends Controller {
     public function store(Request $request) {
         $user = auth()->user();
 
+        // check if user have not filled their identity
+        if (is_null($user->identity())) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Please complete your identity information before applying'
+            ], 403);
+        }
+
+        // check if user already applying application
         if (!is_null($user->organizerApplication())) {
             return response()->json([
+                'error' => true,
                 'message' => 'Can only have one active Application'
             ], 403);
         }
@@ -124,34 +134,45 @@ class OrganizerApplicationController extends Controller {
     public function update(Request $request) {
         $user = auth()->user();
 
-        if ($user->isActingAs(Role::admin())) {
-            $rules = [
-                'id' => 'bail|required|exists:organizer_applications,id',
-                'status' => 'bail|required',
-                'message' => 'sometimes|max:255'
-            ];
-
-            $request->validate($rules);
-
-            $application = OrganizerApplication::find($request->input('id'));
-            $application->update([
-                'status' => $request->input('status'),
-                'reviewed_at' => Carbon::now()
-            ]);
-            $application->refresh();
-            $application->reviewedBy($user);
-
-            if ($request->input('status') === 'rejected') {
-                $application->update([
-                    'rejected_message' => $request->input('message')
-                ]);
-            }
-
+        if (!$user->isActingAs(Role::admin())) {
             return response()->json([
-                'success' => true,
-                'data' => OrganizerApplicationResource::make($application)
-            ], 200);
+                'error' => true,
+                'message' => 'You do not have permission to access this resource'
+            ], 403);
         }
+
+        $rules = [
+            'id' => 'bail|required|exists:organizer_applications,id',
+            'status' => 'bail|required',
+            'message' => 'sometimes|max:255'
+        ];
+
+        $request->validate($rules);
+
+        $application = OrganizerApplication::find($request->input('id'));
+        $application->update([
+            'status' => $request->input('status'),
+            'reviewed_at' => Carbon::now()
+        ]);
+        $application->refresh();
+        $application->reviewedBy($user);
+
+        if ($request->input('status') === 'accepted') {
+            $user = $application->applicant();
+            $user->actingAs(Role::organizer());
+            $user->refresh();
+        }
+
+        if ($request->input('status') === 'rejected') {
+            $application->update([
+                'rejected_message' => $request->input('message')
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => OrganizerApplicationResource::make($application)
+        ], 200);
     }
 
     /**

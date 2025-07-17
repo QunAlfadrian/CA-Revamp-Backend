@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Book;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -37,6 +38,7 @@ class BooksTableSeeder extends Seeder {
             Book::create([
                 'isbn' => fake()->isbn13(),
                 'title' => $title,
+                'slug' => Str::slug($title),
                 'synopsis' => fake()->paragraph(random_int(3, 6)),
                 'author_1' => fake()->name(),
                 'author_2' => random_int(0, 1) == 0 ? null : fake()->name(),

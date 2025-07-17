@@ -19,6 +19,7 @@ trait BelongsToManyRoles {
     }
 
     public function actingAs(Role $role) {
-        return $this->roleRelation()->attach($role);
+        $this->roleRelation()->attach($role);
+        return $this->save();
     }
 }

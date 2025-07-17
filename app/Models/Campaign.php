@@ -86,4 +86,20 @@ class Campaign extends Model {
     public function createdAt(): string {
         return $this->created_at ? $this->created_at->format('d-m-Y H:i:s') : '';
     }
+
+    public function requestedFund(): string {
+        return $this->requested_fund_amount;
+    }
+
+    public function donatedFund(): string {
+        return $this->donated_fund_amount;
+    }
+
+    public function requestedItemQuantity(): string {
+        return $this->requested_item_quantity;
+    }
+
+    public function donatedItemQuantity(): string {
+        return $this->donated_item_quantity;
+    }
 }

@@ -4,13 +4,6 @@ namespace App\Http\Services;
 use Illuminate\Support\Collection;
 
 class SearchService {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct() {
-        //
-    }
-
     public function fuzzySearch(
         Collection $collection,
         string $searchTerm, array $fields,

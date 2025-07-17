@@ -5,26 +5,31 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\IdentityController;
 use App\Http\Controllers\OrganizerApplicationController;
+use App\Http\Controllers\RoleController;
 use Carbon\Carbon;
 use Illuminate\Container\Attributes\Auth;
 
 Route::post('/register', [AuthController::class, 'register']);
-// Route::post('/login', [AuthController::class, 'login']);
 
 Route::group([
     'prefix' => 'v1'
 ], function () {
-    // Login
-    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
-    // Route::post('/login', [AuthController::class, 'login'])->name('login');
-
     Route::get('/test/time', function () {
         return [
             'time' => Carbon::now()->format('dmYHis')
         ];
     });
+
+    // Login
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
+
+    // Books
+    Route::get('/books', [BookController::class, 'index'])->name('books.index');
+    Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 });
 
 Route::group([
@@ -33,6 +38,9 @@ Route::group([
 ], function () {
     // User
     Route::get('/users', UserController::class);
+
+    // Roles
+    Route::get('/roles', RoleController::class);
 
     // User Identity
     Route::get('/identity', [IdentityController::class, 'show'])->name('identities.show');
@@ -43,6 +51,15 @@ Route::group([
     Route::get('/application', [OrganizerApplicationController::class, 'show'])->name('organizer_applications.show');
     Route::post('/application', [OrganizerApplicationController::class, 'store'])->name('organizer_applications.store');
     Route::post('/application/reapply', [OrganizerApplicationController::class, 'update'])->name('organizer_applications.reapply');
+
+    // Books
+    Route::post('/books', [BookController::class, 'store'])->name('books.store');
+    Route::post('/books/{book}', [BookController::class, 'update'])->name('books.update');
+    Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
+
+    // Campaigns
+    Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
+    Route::get('/campaigns/{campaign}', [CampaignController::class, 'show'])->name('campaigns.show');
 
     /** ADMIN */
     // organizer application

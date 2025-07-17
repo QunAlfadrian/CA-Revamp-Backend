@@ -16,6 +16,7 @@ class Book extends Model {
     protected $fillable = [
         'isbn',
         'title',
+        'slug',
         'synopsis',
         'author_1',
         'author_2',
@@ -43,7 +44,11 @@ class Book extends Model {
         return $this->title;
     }
 
-    public function synopsis(): string {
+    public function slug(): string{
+        return $this->slug;
+    }
+
+    public function synopsis(): ?string {
         return $this->synopsis;
     }
 
@@ -59,7 +64,7 @@ class Book extends Model {
         return $this->published_year;
     }
 
-    public function coverImageUrl(): string {
+    public function coverImageUrl(): ?string {
         return $this->cover_image_url;
     }
 

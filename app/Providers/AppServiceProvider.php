@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Book;
+use App\Models\Campaign;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Sanctum\PersonalAccessToken;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -24,5 +27,18 @@ class AppServiceProvider extends ServiceProvider {
         });
 
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+
+        // custom model bindings
+        Route::bind('campaign', function ($value) {
+            return Campaign::where('id', $value)
+                ->orWhere('slug', $value)
+                ->firstOrFail();
+        });
+
+        Route::bind('book', function ($value) {
+            return Book::where('isbn', $value)
+                ->orWhere('slug', $value)
+                ->firstOrFail();
+        });
     }
 }
