@@ -58,6 +58,7 @@ class CampaignController extends Controller {
 
         // search
         if ($request->filled('search')) {
+            $term = $request->input('search');
             $query->with('organizerRelation');
             $search_fields = [
                 'title',
@@ -65,19 +66,9 @@ class CampaignController extends Controller {
                 'organizerRelation.name'
             ];
 
-            $result = $this->searchService->fuzzySearch(
-                $query->get(),
-                $request->input('search'),
-                $search_fields
-            );
-
-            $paginated = $this->paginateService->paginateCollection(
-                $result,
-                request()->input('page', 1),
-                10
-            );
-
-            return new CampaignCollection($paginated);
+            foreach ($search_fields as $field) {
+                $query->orWhere($field, 'like', '%' . $term . '%');
+            }
         }
 
         return new CampaignCollection($query->paginate(10));

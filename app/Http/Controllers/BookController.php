@@ -8,14 +8,12 @@ use App\Models\Book;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Services\ImageService;
-use App\Http\Services\SearchService;
 use App\Http\Services\PaginateService;
 use App\Models\Role;
 
 class BookController extends Controller {
     public function __construct(
         private ImageService $imageService,
-        private SearchService $searchService,
         private PaginateService $paginateService
     ) {
     }
@@ -48,28 +46,18 @@ class BookController extends Controller {
 
         // search
         if ($request->filled('search')) {
+            $term = $request->input('search');
             $search_fields = [
                 'title',
                 'synopsis',
                 'author_1',
                 'author_2',
-                'author_3',
-                'published_year'
+                'author_3'
             ];
 
-            $result = $this->searchService->fuzzySearch(
-                $query->get(),
-                $request->input('search'),
-                $search_fields
-            );
-
-            $paginated = $this->paginateService->paginateCollection(
-                $result,
-                request()->input('page', 1),
-                10
-            );
-
-            return new BookCollection($paginated);
+            foreach ($search_fields as $field) {
+                $query->orWhere($field, 'like', '%' . $term . '%');
+            }
         }
 
         return new BookCollection($query->paginate(10));
@@ -152,7 +140,6 @@ class BookController extends Controller {
      * Update the specified resource in storage.
      */
     public function update(Request $request, Book $book) {
-        
     }
 
     /**
