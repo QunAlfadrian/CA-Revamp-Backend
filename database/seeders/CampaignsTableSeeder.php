@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Book;
-use App\Models\Campaign;
 use App\Models\User;
+use App\Models\Campaign;
+use Illuminate\Support\Arr;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -20,6 +21,15 @@ class CampaignsTableSeeder extends Seeder {
         foreach ($users as $user) {
             $campaign = Campaign::factory()->count(2)->create([
                 'organizer_id' => $user->id,
+                'requested_fund_amount' => Arr::random([
+                    3000000,
+                    3500000,
+                    4000000,
+                    6000000,
+                    7000000,
+                    13000000,
+                    15000000
+                ])
             ]);
         }
 

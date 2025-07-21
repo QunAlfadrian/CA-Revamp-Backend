@@ -30,6 +30,10 @@ Route::group([
     // Books
     Route::get('/books', [BookController::class, 'index'])->name('books.index');
     Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
+
+    // Campaigns
+    Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
+    Route::get('/campaigns/{campaign}', [CampaignController::class, 'show'])->name('campaigns.show');
 });
 
 Route::group([
@@ -57,14 +61,25 @@ Route::group([
     Route::post('/books/{book}', [BookController::class, 'update'])->name('books.update');
     Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
 
+    /** ORGANIZER */
     // Campaigns
-    Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
-    Route::get('/campaigns/{campaign}', [CampaignController::class, 'show'])->name('campaigns.show');
+    Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
+    Route::get('/campaigns/{campaign}', [CampaignController::class, 'update'])->name('campaigns.update');
+    Route::delete('/campaigns/{campaign}', [CampaignController::class, 'destroy'])->name('campaigns.destroy');
+
+    // My Campaigns
+    Route::get('/organizer/campaigns', [CampaignController::class, 'organizerIndex'])->name('organizer.campaigns.index');
+    Route::get('/organizer/campaigns/trashed', [CampaignController::class, 'organizerTrashed'])->name('organizer.campaigns.trashed');
+    Route::put('/organizer/campaigns/trashed/{id}', [CampaignController::class, 'restore'])->name('organizer.campaigns.restore');
 
     /** ADMIN */
     // organizer application
     Route::get('/admin/applications', [OrganizerApplicationController::class, 'index'])->name('organizer_applications.index');
     Route::post('/admin/applications/review', [OrganizerApplicationController::class, 'update'])->name('organizer_applications.review');
+
+    // Campaigns
+    Route::get('/admin/campaigns', [CampaignController::class, 'adminIndex'])->name('admin.campaigns.index');
+    Route::put('/admin/campaigns/{campaign}', [CampaignController::class, 'update'])->name('admin.campaigns.review');
 
     // Logout
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

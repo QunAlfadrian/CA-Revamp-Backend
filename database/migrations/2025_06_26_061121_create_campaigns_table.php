@@ -18,10 +18,10 @@ return new class extends Migration {
                 'fundraiser',
                 'product_donation'
             ])->default('fundraiser');
-            $table->string('title', 255);
+            $table->string('title', 255)->unique();
             $table->string('slug', 50);
             $table->text('description');
-            $table->text('header_image_url');
+            $table->text('header_image_url')->nullable()->default(null);
             $table->enum('status', [
                 'pending',
                 'on_progress',
@@ -35,6 +35,7 @@ return new class extends Migration {
             $table->uuid('reviewed_by')->nullable()->default(null);
             $table->timestamp('reviewed_at')->nullable()->default(null);
             $table->timestamps();
+            $table->softDeletes();
 
             // Foreign key constraints
             $table->foreign('reviewed_by')->references('id')->on('users');

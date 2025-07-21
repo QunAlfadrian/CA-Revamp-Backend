@@ -24,6 +24,8 @@ class CampaignFactory extends Factory {
             'description' => $this->faker->paragraph(15),
             'header_image_url' => 'https://arkwaifu.cc/api/v1/arts/pic_rogue_1_16/variants/origin/content',
             'status' => 'pending',
+            'requested_fund_amount' => $attribute['requested_fund_amount'] ?? 0,
+            'requested_item_quantity' => $attribute['requested_item_quantity'] ?? 0,
             'reviewed_by' => null,
             'reviewed_at' => null
         ];

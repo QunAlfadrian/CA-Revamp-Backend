@@ -22,7 +22,7 @@ class CampaignResource extends JsonResource {
                 'description' => $this->description(),
                 'header_image_url' => $this->headerImageUrl(),
                 'status' => $this->status(),
-                'created_at' => $this->created_at(),
+                'created_at' => $this->createdAt(),
                 'requested_fund_amount' => $this->requestedFund(),
                 'donated_fund_amount' => $this->donatedFund(),
                 'requested_item_quantity' => $this->requestedItemQuantity(),
@@ -34,7 +34,7 @@ class CampaignResource extends JsonResource {
                 'reviewer' => UserSummaryResource::make($this->reviewer())
             ],
             'links' => [
-                
+
             ]
         ];
     }

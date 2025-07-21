@@ -89,6 +89,7 @@ class BookController extends Controller {
 
         $request->validate($rules);
 
+        // create book instance
         $book = Book::create([
             'isbn' => $request->input('isbn'),
             'title' => $request->input('title'),
@@ -101,6 +102,7 @@ class BookController extends Controller {
             'price' => $request->input('price')
         ]);
 
+        // store and update cover image
         if ($request->hasFile('cover_image')) {
             $slug = $book->slug;
             $image = $request->file('cover_image');
