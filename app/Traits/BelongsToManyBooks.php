@@ -5,7 +5,7 @@ namespace App\Traits;
 use App\Models\Book;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-trait BelongsToManyBooks {
+    trait BelongsToManyBooks {
     public function books() {
         return $this->booksRelation;
     }
@@ -33,9 +33,10 @@ trait BelongsToManyBooks {
     public function requestBook(Book $book, int $amount = 1) {
         // if not already requesting the book, create a new pivot
         if (!$this->isRequestingBook($book)) {
-            return $this->booksRelation()->attach($book->isbn, [
+            $this->booksRelation()->attach($book->isbn, [
                 'requested_quantity' => $amount
             ]);
+            return $this->save();
         }
 
         // if laready requesting the book, update the pivot

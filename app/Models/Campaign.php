@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\BelongsToManyBooks;
 use App\Traits\HasManyDonations;
+use App\Traits\HasManyFacilities;
 use App\Traits\HasManyFunds;
 use App\Traits\HasManyRequestedSupplies;
 use App\Traits\HasOrganizer;
@@ -26,6 +27,7 @@ class Campaign extends Model {
     use HasManyDonations;
     use BelongsToManyBooks;
     use HasManyRequestedSupplies;
+    use HasManyFacilities;
 
     public $keyType = 'string';
     public $incrementing = 'false';

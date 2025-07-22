@@ -20,19 +20,16 @@ class UsersTableSeeder extends Seeder {
         ]);
         $user = User::where('email', 'admin@example.com')->first();
         $user->actingAs(Role::admin());
-        
-        User::factory()->count(10)->create();
-        $role = Role::where('name', 'donor')->first();
+
+        User::factory()->count(20)->create();
         $users = User::all();
         foreach ($users as $user) {
-            $user->actingAs($role);
+            $user->actingAs(Role::donor());
         }
 
-        User::factory()->count(5)->create();
-        $role = Role::where('name', 'organizer')->first();
-        $users = User::latest()->limit(5)->get();
+        $users = User::latest('created_at')->limit(5)->get();
         foreach ($users as $user) {
-            $user->actingAs($role);
+            $user->actingAs(Role::organizer());
         }
 
         $user = User::create([
@@ -41,6 +38,15 @@ class UsersTableSeeder extends Seeder {
             'password' => Hash::make('Bulat1234'),
         ]);
         $user = User::where('email', 'kyuib@example.com')->first();
-        $user->actingAs($role);
+        $user->actingAs(Role::donor());
+
+        $user = User::create([
+            'name' => 'emi',
+            'email' => 'emi@example.com',
+            'password' => Hash::make('Bulat1234'),
+        ]);
+        $user = User::where('email', 'emi@example.com')->first();
+        $user->actingAs(Role::donor());
+        $user->actingAs(Role::organizer());
     }
 }

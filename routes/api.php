@@ -64,7 +64,7 @@ Route::group([
     /** ORGANIZER */
     // Campaigns
     Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
-    Route::get('/campaigns/{campaign}', [CampaignController::class, 'update'])->name('campaigns.update');
+    Route::put('/campaigns/{campaign}', [CampaignController::class, 'update'])->name('campaigns.update');
     Route::delete('/campaigns/{campaign}', [CampaignController::class, 'destroy'])->name('campaigns.destroy');
 
     // My Campaigns

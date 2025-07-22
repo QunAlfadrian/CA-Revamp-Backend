@@ -35,14 +35,19 @@ class FundraiserController extends Controller {
         $user->campaignsRelation()->create([
             'type' => $request->input('type'),
             'title' => $request->input('attributes.title'),
-            'slug' => Str::slug($request->input('attributes.title')),
+            'slug' => $request->filled('attributes.slug')
+                ? $request->input('attributes.slug')
+                : Str::slug($request->input('attributes.title')),
             'description' => $request->input('attributes.description'),
             'requested_fund_amount' => $request->input('attributes.requested_fund_amount'),
         ]);
 
         // store and update header image
+        $slug = $request->filled('attributes.slug')
+            ? $request->input('attributes.slug')
+            : Str::slug($request->input('attributes.title'));
         $campaign = $user->campaignsRelation()
-            ->where('slug', Str::slug($request->input('attributes.title')))
+            ->where('slug', $slug)
             ->first();
         if ($request->hasFile('attributes.header_image')) {
             $slug = Str::slug($request->input('attributes.title'));
@@ -65,6 +70,7 @@ class FundraiserController extends Controller {
 
         return response()->json([
             'success' => true,
+            'message' => 'Campaign successfully created',
             'data' => new CampaignResource($campaign)
         ], 200);
     }

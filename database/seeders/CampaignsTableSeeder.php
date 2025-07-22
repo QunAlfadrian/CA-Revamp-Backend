@@ -38,7 +38,7 @@ class CampaignsTableSeeder extends Seeder {
         })->first();
         $user->campaignsRelation()->create([
             'type' => 'product_donation',
-            'title' => 'Test Product Donation',
+            'title' => 'kyuib donasi',
             'slug' => 'kybdonasi',
             'description' => fake()->paragraphs(4, true),
             'header_image_url' => 'https://github.com/',

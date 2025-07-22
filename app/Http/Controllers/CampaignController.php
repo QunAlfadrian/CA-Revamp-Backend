@@ -104,8 +104,9 @@ class CampaignController extends Controller {
         }
 
         if ($request->input('type') === 'product_donation') {
-            $rules['requested_fund_amount'] = 'required|numeric|min:50000|max:9999999999';
-            $rules['requested_item_quantity'] = 'required|integer|min:1';
+            // $rules['requested_fund_amount'] = 'required|numeric|min:50000|max:9999999999';
+            // $rules['requested_item_quantity'] = 'required|integer|min:1';
+            return app(ProductDonationController::class)->store($request);
         }
 
         $request->validate($rules);
@@ -116,7 +117,7 @@ class CampaignController extends Controller {
     /**
      * Display the specified resource.
      */
-    public function show(Campaign $campaign) {
+    public function show(Campaign $campaign) {  
         return (new CampaignResource($campaign))
             ->response()
             ->setStatusCode(200);
