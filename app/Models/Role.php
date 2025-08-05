@@ -12,7 +12,7 @@ class Role extends Model {
     use BelongsToManyUsers;
 
     public $keyType = 'string';
-    public $incrementing = 'false';
+    public $incrementing = false;
 
     protected $fillable = [
         'name'

@@ -41,7 +41,7 @@ class User extends Authenticatable {
     use HasOrganizerApplication;
 
     public $keyType = 'string';
-    public $incrementing = 'false';
+    public $incrementing = false;
 
 	/**
 	 * The attributes that are mass assignable.

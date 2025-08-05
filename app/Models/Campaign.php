@@ -30,7 +30,7 @@ class Campaign extends Model {
     use HasManyFacilities;
 
     public $keyType = 'string';
-    public $incrementing = 'false';
+    public $incrementing = false;
 
     public static function booted() {
         parent::boot();

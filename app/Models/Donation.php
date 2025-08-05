@@ -22,7 +22,7 @@ class Donation extends Model {
     use HasCampaign;
 
     public $keyType = 'string';
-    public $incrementing = 'false';
+    public $incrementing = false;
 
     public static function booted() {
         parent::boot();
@@ -34,6 +34,7 @@ class Donation extends Model {
 
     protected $fillable = [
         'donor_id',
+        'donor_name',
         'campaign_id',
         'type',
         'verified_at'
@@ -49,11 +50,15 @@ class Donation extends Model {
         return (string)$this->id;
     }
 
+    public function donorName(): ?string {
+        return $this->donor_name;
+    }
+
     public function type(): string {
         return $this->type;
     }
 
     public function verifiedAt(): string {
-        return $this->verified_at ? $this->verified_at->format('d-m-Y H:i:s') : '';
+        return $this->verified_at ? $this->verified_at : '';
     }
 }

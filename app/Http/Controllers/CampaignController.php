@@ -94,6 +94,7 @@ class CampaignController extends Controller {
 
         $rules = [
             'attributes.title' => 'required|string|min:10|max:255|unique:campaigns,title',
+            'attributes.slug' => 'nullable|string|min:7|max:50|unique:campaigns,slug',
             'attributes.description' => 'required|string|min:20|max:2500',
             'attributes.header_image' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
         ];
@@ -117,7 +118,7 @@ class CampaignController extends Controller {
     /**
      * Display the specified resource.
      */
-    public function show(Campaign $campaign) {  
+    public function show(Campaign $campaign) {
         return (new CampaignResource($campaign))
             ->response()
             ->setStatusCode(200);

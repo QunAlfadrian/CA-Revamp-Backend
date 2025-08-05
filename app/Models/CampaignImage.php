@@ -12,7 +12,7 @@ class CampaignImage extends Model {
     use HasCampaign;
 
     public $keyType = 'string';
-    public $incrementing = 'false';
+    public $incrementing = false;
 
     public static function booted() {
         parent::boot();

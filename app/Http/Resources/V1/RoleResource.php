@@ -14,7 +14,6 @@ class RoleResource extends JsonResource {
     public function toArray(Request $request): array {
         return [
             'type' => 'roles',
-            'id' => $this->id(),
             'name' => $this->name()
         ];
     }

@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthenticatedSessionController extends Controller {
     /**
@@ -18,14 +19,21 @@ class AuthenticatedSessionController extends Controller {
 
         $user = auth()->user();
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'token' => $user->createToken($user->name())->plainTextToken,
-                'name' => $user->name(),
-            ],
-            'message' => 'User logged in!',
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'data' => [
+        //         'token' => $user->createToken($user->name())->plainTextToken,
+        //         'user' => [
+        //             'username' => $user->name(),
+        //             'email' => $user->email(),
+        //             'profile_image' => $user->identity() ? $user->identity()->profileImageUrl() : null
+        //         ]
+        //     ],
+        //     'message' => 'User logged in!',
+        // ]);
+        $token = $user->createToken($user->name())->plainTextToken;
+        $cookie = Cookie::make('auth-token', $token, 60, '/', null, true, true);
+        return response('OK')->cookie('auth-token', $token, 60, '/', null, true, true);
     }
 
     /**
@@ -33,7 +41,7 @@ class AuthenticatedSessionController extends Controller {
      */
     public function destroy(Request $request): JsonResponse {
         Auth::user()->tokens()->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'User logged out!'

@@ -19,6 +19,6 @@ trait HasDonor {
     }
 
     public function donatedBy(User $user) {
-        return $this->donorRelation()->associate($user);
+        return $this->donorRelation()->associate($user)->save();
     }
 }

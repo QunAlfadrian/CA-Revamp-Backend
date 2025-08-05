@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Book;
+use App\Models\User;
 use App\Models\Campaign;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Support\Facades\Route;
@@ -27,11 +28,18 @@ class AppServiceProvider extends ServiceProvider {
         });
 
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+        Sanctum::getAccessTokenFromRequestUsing(function ($request) {
+            return $request->cookie('auth-token');
+        });
 
         // custom model bindings
+        Route::bind('user', function ($value) {
+            return User::where('name', $value)
+                ->firstOrFail();
+        });
+
         Route::bind('campaign', function ($value) {
-            return Campaign::where('id', $value)
-                ->orWhere('slug', $value)
+            return Campaign::where('slug', $value)
                 ->firstOrFail();
         });
 

@@ -1,31 +1,38 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Resources\V1\RoleResource;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
+use Illuminate\Container\Attributes\Auth;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\IdentityController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\OrganizerApplicationController;
-use App\Http\Controllers\RoleController;
-use Carbon\Carbon;
-use Illuminate\Container\Attributes\Auth;
-
-Route::post('/register', [AuthController::class, 'register']);
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\DonationController;
+use App\Http\Controllers\MidtransController;
 
 Route::group([
     'prefix' => 'v1'
 ], function () {
-    Route::get('/test/time', function () {
+    Route::post('/test', function () {
         return [
             'time' => Carbon::now()->format('dmYHis')
         ];
     });
 
+    // Register
+    Route::post('/register', [AuthController::class, 'register']);
+
     // Login
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
+
+    // User
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 
     // Books
     Route::get('/books', [BookController::class, 'index'])->name('books.index');
@@ -34,6 +41,13 @@ Route::group([
     // Campaigns
     Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
     Route::get('/campaigns/{campaign}', [CampaignController::class, 'show'])->name('campaigns.show');
+
+    // Donate to campaigns
+    Route::post('/campaigns/{campaign}/donations', [DonationController::class, 'store'])->name('campaigns.donations.store');
+    Route::post('/campaigns/{campaign}/donations/finish', [DonationController::class, 'finish'])->name('campaigns.donations.finish');
+
+    // Midtrans
+    Route::post('/midtrans/notifications', [MidtransController::class, 'handleNotifications'])->name('midtrans.notifications');
 });
 
 Route::group([
@@ -41,7 +55,19 @@ Route::group([
     'middleware' => 'auth:sanctum'
 ], function () {
     // User
-    Route::get('/users', UserController::class);
+    Route::get('/user', function (Request $request) {
+        $user = auth()->user();
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => [
+                    'name' => $user->name(),
+                    'email' => $user->email()
+                ],
+                'roles' => RoleResource::collection($user->roles())
+            ]
+        ], 200);
+    });
 
     // Roles
     Route::get('/roles', RoleController::class);

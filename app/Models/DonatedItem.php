@@ -21,7 +21,7 @@ class DonatedItem extends Model {
     use HasReviewer;
 
     public $keyType = 'string';
-    public $incrementing = 'false';
+    public $incrementing = false;
 
     public static function booted() {
         parent::boot();

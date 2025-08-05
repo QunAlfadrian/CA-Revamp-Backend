@@ -11,7 +11,7 @@ class Book extends Model {
 
     public $primaryKey = 'isbn';
     public $keyType = 'string';
-    public $incrementing = 'false';
+    public $incrementing = false;
 
     protected $fillable = [
         'isbn',

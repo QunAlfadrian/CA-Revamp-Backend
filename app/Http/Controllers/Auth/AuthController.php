@@ -15,23 +15,21 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller {
     public function register(Request $request): JsonResponse {
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
+        $rules = [
+            'username' => ['required', 'string', 'max:255', 'unique:users,name'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        ];
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors());
-        }
+        $request->validate($rules);
 
         $user = User::create([
-            'name' => $request->name,
+            'name' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        $user = User::where('name', $request->name)
+        $user = User::where('name', $request->username)
             ->where('email', $request->email)->first();
         $user->actingAs(Role::donor());
 
@@ -44,7 +42,7 @@ class AuthController extends Controller {
                 'name' => $user->name(),
             ],
             'message' => 'Successfully signed up!',
-        ]);
+        ], 201);
     }
 
     public function login(Request $request) {
@@ -56,7 +54,7 @@ class AuthController extends Controller {
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'message' => 'Unauthorized'
-            ]);
+            ], 401);
         }
 
         $user = User::where('email', $request->email)->firstOrFail();

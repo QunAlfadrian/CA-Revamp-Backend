@@ -14,7 +14,7 @@ class Identity extends Model {
     use HasUser;
 
     public $keyType = 'string';
-    public $incrementing = 'false';
+    public $incrementing = false;
 
     public static function booted() {
         parent::boot();

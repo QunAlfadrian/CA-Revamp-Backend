@@ -1,5 +1,6 @@
 <?php
 
+use App\FundStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,7 +12,8 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('funds', function (Blueprint $table) {
             // $table->uuid('id')->primary();
-            $table->string('id', 19)->primary(); // fund-31122025235959
+            $table->uuid('id')->primary();
+            $table->string('order_id', 25);
             $table->foreignUuid('campaign_id')->constrained(
                 'campaigns', 'id'
             )->cascadeOnDelete();
@@ -19,9 +21,11 @@ return new class extends Migration {
                 'donations', 'id'
             );
             $table->decimal('amount', 10, 0)->default(5000);
-            $table->string('status')->default('pending');
-            $table->string('snap_token', 36)->nullable();
-            $table->string('redirect_url', 75)->nullable();
+            $table->decimal('service_fee', 4, 0)->default(0);
+            $table->enum('status', FundStatus::cases())
+                ->default(FundStatus::Pending->value());
+            $table->string('snap_token', 50)->nullable();
+            $table->string('redirect_url', 100)->nullable();
             $table->timestamps();
         });
     }

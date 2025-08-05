@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\FundStatus;
 use App\Traits\HasCampaign;
 use App\Traits\HasDonation;
+use Illuminate\Support\Str;
 use App\Traits\ModelHelpers;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Fund extends Model {
     use HasFactory;
@@ -17,16 +19,30 @@ class Fund extends Model {
     use HasDonation;
 
     public $keyType = 'string';
-    public $incrementing = 'false';
+    public $incrementing = false;
+
+    public static function booted() {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->id = Str::uuid();
+        });
+    }
 
     protected $fillable = [
         'id',
+        'order_id',
         'campaign_id',
         'donation_id',
         'amount',
+        'service_fee',
         'status',
         'snap_token',
         'redirect_url'
+    ];
+
+    protected $casts = [
+        'status' => FundStatus::class
     ];
 
     public function id(): string {

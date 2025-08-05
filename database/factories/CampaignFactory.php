@@ -19,7 +19,7 @@ class CampaignFactory extends Factory {
         return [
             'organizer_id' => $attribute['organizer_id'] ?? User::factory(),
             'type' => $attribute['type'] ?? 'fundraiser',
-            'title' => $this->faker->sentence(5),
+            'title' => $this->faker->sentence(3),
             'slug' => $attribute['slug'] ?? 'campaign-' . Carbon::now()->format('dmYHis'),
             'description' => $this->faker->paragraph(15),
             'header_image_url' => 'https://arkwaifu.cc/api/v1/arts/pic_rogue_1_16/variants/origin/content',

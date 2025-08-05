@@ -19,7 +19,7 @@ class CampaignsTableSeeder extends Seeder {
         })->get();
 
         foreach ($users as $user) {
-            $campaign = Campaign::factory()->count(2)->create([
+            $campaign = Campaign::factory()->count(1)->create([
                 'organizer_id' => $user->id,
                 'requested_fund_amount' => Arr::random([
                     3000000,
@@ -29,7 +29,8 @@ class CampaignsTableSeeder extends Seeder {
                     7000000,
                     13000000,
                     15000000
-                ])
+                ]),
+                'slug' => fake()->word()
             ]);
         }
 
@@ -49,5 +50,23 @@ class CampaignsTableSeeder extends Seeder {
             Book::first(),
             5
         );
+
+        $user = User::where('name', 'emi')->first();
+        for ($i = 1; $i <= 5; $i++) {
+            $campaign = Campaign::factory()->create([
+                'organizer_id' => $user->id(),
+                'requested_fund_amount' => Arr::random([
+                    1000000, 3000000, 1500000
+                ]),
+                'slug' => 'temifund'.$i
+            ]);
+        }
+
+        $campaigns = $user->campaigns();
+        foreach ($campaigns as $campaign) {
+            $campaign->update([
+                'status' => 'on_progress'
+            ]);
+        }
     }
 }
