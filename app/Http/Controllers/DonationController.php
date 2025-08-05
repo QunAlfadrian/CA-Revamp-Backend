@@ -81,8 +81,8 @@ class DonationController extends Controller {
                 // create snap token request payload
                 if ($user) {
                     $fullName = $user->identity()
-                        ? Str::of($user->identity()->fullName()->explode(' '))
-                        : null;
+                        ? Str::of($user->identity()->fullName())->explode(' ')
+                        : Str::of($user->name())->explode(' ');
                 } else {
                     $fullName = Str::of($request->input('username'))->explode(' ');
                 }
@@ -142,7 +142,6 @@ class DonationController extends Controller {
                 return response()->json([
                     "message" => $e->getMessage(),
                     "error" => "Internal server error",
-                    "url" => request()->header('X-Previous-URL'),
                 ], 500);
             }
         }
