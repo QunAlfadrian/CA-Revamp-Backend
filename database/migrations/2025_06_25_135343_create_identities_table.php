@@ -11,9 +11,7 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('identities', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained(
-                'users', 'id'
-            );
+            $table->string('user_id', 14);
             $table->string('full_name', 127);
             $table->string('phone_number', 15)->nullable();
             $table->enum('gender', [
@@ -26,6 +24,9 @@ return new class extends Migration {
             $table->string('nik', 16)->nullable();
             $table->text('id_card_image_url')->nullable();
             $table->timestamps();
+
+            // foreign key constraints
+            $table->foreign('user_id')->references('user_id')->on('users');
         });
     }
 

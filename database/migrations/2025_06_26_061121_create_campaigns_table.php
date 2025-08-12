@@ -11,9 +11,7 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('campaigns', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('organizer_id')->constrained(
-                'users', 'id'
-            )->cascadeOnDelete();
+            $table->string('organizer_id', 14);
             $table->enum('type', [
                 'fundraiser',
                 'product_donation'
@@ -33,13 +31,14 @@ return new class extends Migration {
             $table->decimal('withdrawn_fund', 10, 0)->default(0);
             $table->unsignedSmallInteger('requested_item_quantity')->default(0);
             $table->unsignedSmallInteger('donated_item_quantity')->default(0);
-            $table->uuid('reviewed_by')->nullable()->default(null);
+            $table->string('reviewed_by', 14)->nullable()->default(null);
             $table->timestamp('reviewed_at')->nullable()->default(null);
             $table->timestamps();
             $table->softDeletes();
 
             // Foreign key constraints
-            $table->foreign('reviewed_by')->references('id')->on('users');
+            $table->foreign('organizer_id')->references('user_id')->on('users')->cascadeOnDelete();
+            $table->foreign('reviewed_by')->references('user_id')->on('users');
         });
     }
 

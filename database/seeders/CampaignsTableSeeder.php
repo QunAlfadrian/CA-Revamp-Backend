@@ -20,7 +20,7 @@ class CampaignsTableSeeder extends Seeder {
 
         foreach ($users as $user) {
             $campaign = Campaign::factory()->count(1)->create([
-                'organizer_id' => $user->id,
+                'organizer_id' => $user->id(),
                 'requested_fund_amount' => Arr::random([
                     3000000,
                     3500000,

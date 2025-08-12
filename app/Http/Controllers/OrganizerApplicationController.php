@@ -116,7 +116,7 @@ class OrganizerApplicationController extends Controller {
         $user = auth()->user();
         $application = $user->organizerApplication();
 
-        if (is_null($application)) {
+        if (!$application) {
             return response()->json([
                 'message' => 'Application not found'
             ], 404);

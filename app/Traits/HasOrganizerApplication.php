@@ -11,7 +11,7 @@ trait HasOrganizerApplication {
     }
 
     public function organizerApplicationRelation(): HasOne {
-        return $this->hasOne(OrganizerApplication::class);
+        return $this->hasOne(OrganizerApplication::class, 'user_id', 'user_id');
     }
 
     public function isOwnerOfApplication(OrganizerApplication $application): bool {

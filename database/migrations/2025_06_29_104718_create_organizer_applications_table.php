@@ -11,19 +11,20 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('organizer_applications', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id');
+            $table->string('user_id', 14);
             $table->enum('status', [
                 'pending',
                 'accepted',
                 'rejected'
             ])->default('pending');
             $table->string('rejected_message')->default(null)->nullable();
-            $table->foreignUuid('reviewed_by')->default(null)->nullable();
+            $table->string('reviewed_by', 14)->default(null)->nullable();
             $table->timestamp('reviewed_at')->default(null)->nullable();
             $table->timestamps();
 
             // Foreign key constraints
-            $table->foreign('reviewed_by')->references('id')->on('users');
+            $table->foreign('user_id')->references('user_id')->on('users');
+            $table->foreign('reviewed_by')->references('user_id')->on('users');
         });
     }
 

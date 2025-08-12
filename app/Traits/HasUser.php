@@ -11,7 +11,7 @@ trait HasUser {
     }
 
     public function userRelation(): BelongsTo {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
     public function isOwnedBy(User $user): bool {

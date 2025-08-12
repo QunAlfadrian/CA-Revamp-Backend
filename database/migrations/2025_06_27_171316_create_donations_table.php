@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('donations', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('donor_id')->nullable()->default(null);
+            $table->string('donor_id', 14)->nullable()->default(null);
             $table->string('donor_name', 50)->nullable()->default(null);
             $table->foreignUuid('campaign_id')->constrained(
                 'campaigns', 'id'
@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->timestamps();
 
             // Foreign key constraints
-            $table->foreign('donor_id')->references('id')->on('users');
+            $table->foreign('donor_id')->references('user_id')->on('users');
         });
     }
 

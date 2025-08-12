@@ -11,7 +11,7 @@ trait HasIdentity {
     }
 
     public function identityRelation(): HasOne {
-        return $this->hasOne(Identity::class);
+        return $this->hasOne(Identity::class, 'user_id', 'user_id');
     }
 
     public function isOwnerOf(Identity $identity): bool {

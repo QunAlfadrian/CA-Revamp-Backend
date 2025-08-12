@@ -102,11 +102,18 @@ class IdentityController extends Controller {
      */
     public function show(Request $request) {
         $user = auth()->user();
+
+        if (!$user->identity()) {
+            return response()->json([
+                'message' => 'Identity not found'
+            ], 404);
+        }
+
         return response()->json([
             'success' => true,
             'data' => $user->identity()
                 ? new IdentityResource($user->identity())
-                : null
+                : null,
         ]);
     }
 

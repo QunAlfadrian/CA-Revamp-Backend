@@ -27,7 +27,7 @@ class Role extends Model {
             $latestRole = self::orderBy('role_id', 'desc')->first();
 
             if ($latestRole) {
-                $latestID = intval(substr($latestRole->name(), 4));
+                $latestID = intval(substr($latestRole->id(), 4));
                 $nextID = $latestID++;
             } else {
                 $nextID = 1;

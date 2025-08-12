@@ -24,10 +24,12 @@ return new class extends Migration {
                 'cancelled'
             ])->default('pending_verification');
             $table->foreignUuid('campaign_id')->nullable();
-            $table->uuid('reviewed_by')->nullable()->default(null);
+            $table->string('reviewed_by', 14)->nullable()->default(null);
             $table->timestamp('reviewed_at')->nullable()->default(null);
-            $table->foreign('reviewed_by')->references('id')->on('users');
             $table->timestamps();
+
+            // foreign key constraints
+            $table->foreign('reviewed_by')->references('user_id')->on('users');
         });
     }
 
