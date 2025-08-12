@@ -21,16 +21,16 @@ class UsersTableSeeder extends Seeder {
         $user = User::where('email', 'admin@example.com')->first();
         $user->actingAs(Role::admin());
 
-        User::factory()->count(20)->create();
-        $users = User::all();
-        foreach ($users as $user) {
-            $user->actingAs(Role::donor());
-        }
+        // User::factory()->count(20)->create();
+        // $users = User::all();
+        // foreach ($users as $user) {
+        //     $user->actingAs(Role::donor());
+        // }
 
-        $users = User::latest('created_at')->limit(5)->get();
-        foreach ($users as $user) {
-            $user->actingAs(Role::organizer());
-        }
+        // $users = User::latest('created_at')->limit(5)->get();
+        // foreach ($users as $user) {
+        //     $user->actingAs(Role::organizer());
+        // }
 
         $user = User::create([
             'name' => 'kyuib',

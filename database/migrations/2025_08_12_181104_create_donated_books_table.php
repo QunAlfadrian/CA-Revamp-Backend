@@ -9,9 +9,8 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        Schema::create('roles', function (Blueprint $table) {
-            $table->string('role_id', 5)->primary();
-            $table->string('name');
+        Schema::create('donated_books', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
         });
     }
@@ -20,6 +19,6 @@ return new class extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('donated_books');
     }
 };

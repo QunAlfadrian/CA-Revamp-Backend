@@ -11,6 +11,7 @@ class Role extends Model {
     use ModelHelpers;
     use BelongsToManyUsers;
 
+    protected $primaryKey = 'role_id';
     public $keyType = 'string';
     public $incrementing = false;
 
@@ -22,12 +23,26 @@ class Role extends Model {
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = Str::uuid();
+            // $model->id = Str::uuid();
+            $latestRole = self::orderBy('role_id', 'desc')->first();
+
+            if ($latestRole) {
+                $latestID = intval(substr($latestRole->name(), 4));
+                $nextID = $latestID++;
+            } else {
+                $nextID = 1;
+            }
+
+            $model->role_id = 'CA_R' . $nextID;
+            while (self::where('role_id', $model->role_id)->exists()) {
+                $nextID++;
+                $model->role_id = 'CA_R' . $nextID;
+            }
         });
     }
 
     public function id(): string {
-        return (string)$this->id;
+        return $this->role_id;
     }
 
     public function name(): string {

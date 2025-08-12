@@ -10,8 +10,14 @@ trait BelongsToManyRoles {
         return $this->roleRelation;
     }
 
-    public function roleRelation(): BelongsToMany {
-        return $this->belongsToMany(Role::class);
+    /**
+     * The roles that belong to the BelongsToManyRoles
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function roleRelation(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
     }
 
     public function isActingAs(Role $role): bool {
@@ -19,7 +25,7 @@ trait BelongsToManyRoles {
     }
 
     public function actingAs(Role $role) {
-        $this->roleRelation()->attach($role);
+        $this->roleRelation()->attach($role->id());
         return $this->save();
     }
 }

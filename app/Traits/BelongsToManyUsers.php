@@ -11,7 +11,7 @@ trait BelongsToManyUsers {
     }
 
     public function userRelation(): BelongsToMany {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'role_user', 'role_id', 'user_id');
     }
 
     // public function isActingAs(User $user): bool {
