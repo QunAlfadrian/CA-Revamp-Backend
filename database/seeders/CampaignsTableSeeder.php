@@ -50,6 +50,9 @@ class CampaignsTableSeeder extends Seeder {
             Book::first(),
             5
         );
+        $prod->update([
+            'status' => 'on_progress'
+        ]);
 
         $user = User::where('name', 'emi')->first();
         for ($i = 1; $i <= 5; $i++) {

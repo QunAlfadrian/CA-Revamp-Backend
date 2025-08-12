@@ -22,8 +22,8 @@ return new class extends Migration {
             );
             $table->decimal('amount', 10, 0)->default(5000);
             $table->decimal('service_fee', 4, 0)->default(0);
-            $table->enum('status', FundStatus::cases())
-                ->default(FundStatus::Pending->value());
+            $table->enum('status', array_map(fn($status) => $status->value, FundStatus::cases()))
+                ->default(FundStatus::Pending->value);
             $table->string('snap_token', 50)->nullable();
             $table->string('redirect_url', 100)->nullable();
             $table->timestamps();

@@ -28,9 +28,8 @@ return new class extends Migration {
                 'lion_parcel',
                 'spx_express',
                 'dhl'
-
             ])->default('pos_indonesia');
-            $table->string('resi');
+            $table->string('resi', 25);
             $table->enum('status', [
                 'pending_verification',
                 'on_delivery',

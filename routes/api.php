@@ -98,6 +98,9 @@ Route::group([
     Route::get('/organizer/campaigns/trashed', [CampaignController::class, 'organizerTrashed'])->name('organizer.campaigns.trashed');
     Route::put('/organizer/campaigns/trashed/{id}', [CampaignController::class, 'restore'])->name('organizer.campaigns.restore');
 
+    /** DONOR */
+    Route::get('/donor/donations', [DonationController::class, 'index'])->name('donations.index');
+
     /** ADMIN */
     // organizer application
     Route::get('/admin/applications', [OrganizerApplicationController::class, 'index'])->name('organizer_applications.index');

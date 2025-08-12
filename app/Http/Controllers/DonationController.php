@@ -2,20 +2,91 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Services\MidtransService;
 use Exception;
 use App\Models\Campaign;
+use App\Models\Donation;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Services\ImageService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Services\MidtransService;
+use App\Http\Resources\V1\DonationCollection;
+use App\Models\Book;
 
 class DonationController extends Controller {
+    public function __construct(private ImageService $imageService) {
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index() {
-        //
+    public function index(Request $request) {
+        $user = auth('sanctum')->user();
+
+        $query = Donation::query();
+
+        // filter by user
+        $query->where('donor_id', $user->id())->get();
+
+        // filter type
+        if ($request->filled('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
+        // filter status
+        if ($request->filled('status')) {
+            $status = $request->input('status');
+
+            $fundStatus = match ($status) {
+                'success' => 'paid',
+                'failed' => 'failed',
+                'pending' => 'pending',
+                default => 'pending'
+            };
+            $query->whereHas('fundsRelation', function ($fund) use ($fundStatus) {
+                $fund->where('status', $fundStatus);
+            });
+
+            switch ($status) {
+                case 'success':
+                    $query->whereHas('donatedItemsRelation', function ($q) {
+                        $q->where('status', 'received');
+                    });
+                    break;
+                case 'failed':
+                    $query->whereHas('donatedItemsRelation', function ($q) {
+                        $q->where('status', 'not_received')
+                            ->orWhere('status', 'cancelled')
+                            ->orWhere('status', 'declined');
+                    });
+                    break;
+                case 'pending':
+                    $query->whereHas('donatedItemsRelation', function ($q) {
+                        $q->where('status', 'pending_verification')
+                            ->orWhere('status', 'on_delivery');
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // search
+        if ($request->filled('search')) {
+            $term = $request->input('search');
+
+            $query->where(function ($q) use ($term) {
+                $q->whereHas('campaignRelation', function ($q2) use ($term) {
+                    $q2->where('title', 'like', "%$term%")
+                        ->orWhereHas('organizerRelation', function ($q) use ($term) {
+                            $q->where('name', 'like', "%$term%");
+                        });
+                });
+            });
+        }
+
+        return new DonationCollection($query->paginate(10));
     }
 
     /**
@@ -40,101 +111,115 @@ class DonationController extends Controller {
                 'username' => 'required|string|min:5|max:25',
             ];
         }
+        $request->validate($rules);
 
         if ($campaign->type() === 'fundraiser') {
+            return app(FundraiserController::class)->donate($request, $campaign);
+        }
+
+        if ($campaign->type() === 'product_donation') {
             $rules += [
-                'fund_amount' => 'required|integer|min:5000|max:20000000'
+                'books' => 'nullable|array',
+                'books.*.isbn' => 'string|min:10|max:13|exists:books,isbn',
+                'books.*.quantity' => 'integer|min:1|max:99',
+
+                'facilities' => 'nullable|array',
+                'facilities.*.name' => 'string|max:25',
+                'facilities.*.description' => 'string|max:255',
+                'facilities.*.requested_quantity' => 'int|min:1|max:10',
+
+                'package_picture' => 'required|image|max:5048',
+                'delivery_service' => 'required|string|in:pos_indonesia,jne,sicepat,anteraja,lion_parcel,spx_express,dhl',
+                'resi' => 'required|string|max:25'
             ];
+
+
+            Log::info($request->input('books'));
             $request->validate($rules);
 
             DB::beginTransaction();
-
             try {
-                // create donation instance
-                $donation = $campaign->donationsRelation()->create([
-                    'donor_name' => $user ? $user->name() : $request->input('username'),
-                    'type' => 'fund',
-                ]);
+                // get or create donation instance
+                $username = $user ? $user->name() : $request->input('username');
+                if ($user) {
+                    $donation = $campaign->donationsRelation()
+                        ->whereHas('donorRelation', function ($q) use ($username) {
+                            $q->where('name', $username);
+                        })->where('type', 'item')
+                        ->first();
+                } else {
+                    $donation = $campaign->donationsRelation()
+                        ->where('donor_name', $username)
+                        ->where('type', 'item')
+                        ->first();
+                }
 
+                if (!$donation) {
+                    $donation = $campaign->donationsRelation()->create([
+                        'donor_name' => $username,
+                        'type' => 'item',
+                    ]);
+                }
+
+                // attach user to donation
                 if ($user) {
                     $donation->donatedBy($user);
                 }
 
-                // calculate service fee
-                $serviceFeePercent = config('donation.service_fee_percent');
-                $serviceFeeThreshold = config('donation.service_fee_threshold');
-                $serviceFeeMax = config('donation.service_fee_max');
-                $serviceFee = $request->input('fund_amount') > $serviceFeeThreshold
-                    ? $serviceFeeMax
-                    : $serviceFeePercent / 100 * $request->input('fund_amount');
-
-                // create fund instance
-                $orderId = $campaign->slug() . '-' . now()->timestamp;
-                $fund = $donation->fundsRelation()->create([
+                // create donated items instance
+                $donatedItems = $donation->donatedItemsRelation()->create([
                     'campaign_id' => $campaign->id(),
-                    'donation_id' => $donation->id(),
-                    'order_id' => $orderId,
-                    'amount' => $request->input('fund_amount'),
-                    'service_fee' => $serviceFee
+                    'donated_item_quantity' => 0,
+                    'delivery_service' => $request->input('delivery_service'),
+                    'resi' => $request->input('resi'),
                 ]);
 
-                // create snap token request payload
-                if ($user) {
-                    $fullName = $user->identity()
-                        ? Str::of($user->identity()->fullName())->explode(' ')
-                        : Str::of($user->name())->explode(' ');
-                } else {
-                    $fullName = Str::of($request->input('username'))->explode(' ');
+                // store package picture
+                if ($request->hasFile('package_picture')) {
+                    $slug = $user
+                        ? Str::slug($user->name())
+                        : Str::slug($request->input('username'));
+                    $image = $request->file('package_picture');
+                    $filename = 'package-' . $slug . "-" . now()->format('YmdHis') . ".webp";
+                    $path = "images/donations/products/$campaign->id()/";
+
+                    $this->imageService->storeImage(
+                        $image,
+                        $filename,
+                        $path,
+                        75,
+                        true
+                    );
+                    $donatedItems->update([
+                        'package_picture_url' => asset($path . $filename)
+                    ]);
                 }
 
-                $firstName = $fullName[0];
-                $lastName = count($fullName) > 1
-                    ? $fullName[count($fullName) - 1]
-                    : null;
-                $payload = [
-                    'transaction_details' => [
-                        'order_id' => $orderId,
-                        'gross_amount' => floatval($fund->amount)
-                    ],
-                    'customer_details' => [
-                        'first_name' => $firstName,
-                        'last_name' => $lastName,
-                        'email' => $user ? $user->email() : null
-                    ],
-                    'item_details' => [
-                        [
-                            'id' => $campaign->id(),
-                            'price' => $fund->amount(),
-                            'quantity' => 1,
-                            'name' => $campaign->title(),
-                            'type' => $campaign->type(),
-                        ]
-                    ],
-                    'callbacks' => [
-                        'finish' => request()->header('X-Previous-URL') ?? url('/'),
-                    ]
-                ];
+                // create donated book instances
 
-                // Send request to midtrans
-                $service = new MidtransService();
-                $response = $service->snap($payload);
+                // create donated facilities instances
 
-                // Retrieve snap token
-                $snapToken = $response['token'];
-                $url = $response['redirect_url'];
-                $fund->update([
-                    'snap_token' => $snapToken,
-                    'redirect_url' => $url
-                ]);
-                $fund->save();
+                // update donated items instance quantity
+
+                // // update requested book
+                // if ($request->input('books')) {
+                //     $books = $request->input('books');
+                //     foreach ($books as $donatedBook) {
+                //         $isbn = $donatedBook['isbn'];
+                //         $quantity = $donatedBook['quantity'];
+
+                //         $book = Book::find($isbn);
+                //         $campaign->donateBook($book, $quantity);
+                //     }
+                // }
 
                 DB::commit();
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Please finish the payment',
+                    'message' => 'Please wait for verification',
                     'data' => [
-                        'redirect_url' => $fund->redirectUrl()
+                        'redirect_url' => null
                     ]
                 ], 200);
             } catch (Exception $e) {

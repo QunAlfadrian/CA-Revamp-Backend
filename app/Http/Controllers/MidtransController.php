@@ -35,7 +35,7 @@ class MidtransController extends Controller {
        // Successful Payment
         if ($status === "settlement" || $status === 'capture') {
             /** @var Fund $fund */
-            $fund = Fund::where('order_id', $orderId)->firstOrFail();
+            $fund = Fund::where('order_id', $orderId)->first();
 
             if (!$fund) {
                 Log::warning('Midtrans: Fund not found for order_id: '. $orderId);

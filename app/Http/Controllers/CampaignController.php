@@ -67,7 +67,7 @@ class CampaignController extends Controller {
             $query->where(function ($q) use ($term) {
                 $q->where('title', 'like', '%' . $term . '%')
                     ->orWhere('type', 'like', '%' . $term . '%')
-                    ->whereHas('organizerRelation', function ($q2) use ($term) {
+                    ->orWhereHas('organizerRelation', function ($q2) use ($term) {
                         $q2->where('name', 'like', '%' . $term . '%');
                     });
             });
@@ -286,14 +286,12 @@ class CampaignController extends Controller {
         // search
         if ($request->filled('search')) {
             $term = $request->input('search');
-            $search_fields = [
-                'title',
-                'type',
-            ];
 
-            foreach ($search_fields as $field) {
-                $query->orWhere($field, 'like', '%' . $term . '%');
-            }
+            $query->where(function ($q) use ($term) {
+                $q->where('title', 'like', "%$term%")
+                    ->orWhere('type', 'like', "%$term%")
+                    ->orWhere('slug', 'like', "%$term%");
+            });
         }
 
         return new CampaignCollection($query->paginate(10));

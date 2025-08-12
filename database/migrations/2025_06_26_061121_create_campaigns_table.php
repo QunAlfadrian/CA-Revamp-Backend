@@ -30,6 +30,7 @@ return new class extends Migration {
             ])->default('pending');
             $table->decimal('requested_fund_amount', 10, 0)->default(0);
             $table->decimal('donated_fund_amount', 10, 0)->default(0);
+            $table->decimal('withdrawn_fund', 10, 0)->default(0);
             $table->unsignedSmallInteger('requested_item_quantity')->default(0);
             $table->unsignedSmallInteger('donated_item_quantity')->default(0);
             $table->uuid('reviewed_by')->nullable()->default(null);

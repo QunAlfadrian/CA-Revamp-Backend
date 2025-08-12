@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 trait HasManyFunds {
     public function funds() {
-        return $this->fundRelation;
+        return $this->fundsRelation;
     }
 
     public function fundsRelation(): HasMany {

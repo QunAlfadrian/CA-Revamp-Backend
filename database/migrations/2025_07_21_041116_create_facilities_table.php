@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('facilities', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name', 50);
+            $table->string('name', 25);
             $table->string('description', 255);
             $table->unsignedSmallInteger('requested_quantity')->default(0);
             $table->unsignedSmallInteger('donated_quantity')->default(0);
