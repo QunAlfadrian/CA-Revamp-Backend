@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::create('campaigns', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->string('campaign_id', 15)->primary();
             $table->string('organizer_id', 14);
             $table->enum('type', [
                 'fundraiser',

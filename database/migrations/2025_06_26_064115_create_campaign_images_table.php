@@ -16,11 +16,11 @@ return new class extends Migration {
             $table->string('alternative_text', 255);
             $table->string('filename')->nullable();
             $table->text('url');
-            
-            $table->foreignUuid('campaign_id')->constrained(
-                'campaigns', 'id'
-            )->cascadeOnDelete();
+            $table->string('campaign_id', 15);
             $table->timestamps();
+
+            // foreign key constraints
+            $table->foreign('campaign_id')->references('campaign_id')->on('campaigns')->cascadeOnDelete();
         });
     }
 

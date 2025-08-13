@@ -10,15 +10,18 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::create('requested_books', function (Blueprint $table) {
-            $table->foreignUuid('campaign_id')->constrained()->cascadeOnDelete();
+            $table->string('campaign_id', 15);
             $table->string('book_id', 13);
             $table->unsignedSmallInteger('requested_quantity')->default(0);
             $table->unsignedSmallInteger('donated_quantity')->default(0);
+            $table->timestamps();
 
-            $table->foreign('book_id')->references('isbn')->on('books')->cascadeOnDelete();
+            // primary key constraint
             $table->primary(['campaign_id', 'book_id']);
 
-            $table->timestamps();
+            // foreign key constraints
+            $table->foreign('book_id')->references('isbn')->on('books')->cascadeOnDelete();
+            $table->foreign('campaign_id')->references('campaign_id')->on('campaigns');
         });
     }
 

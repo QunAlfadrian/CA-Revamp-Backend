@@ -20,7 +20,7 @@ trait ReviewManyCampaigns {
             throw new \Exception('You do not have permissions to access this resources.');
         }
 
-        return $this->hasMany(Campaign::class, 'reviewed_by');
+        return $this->hasMany(Campaign::class, 'reviewed_by', 'user_id');
     }
 
     public function isReviewerOf(Campaign $campaign): bool {

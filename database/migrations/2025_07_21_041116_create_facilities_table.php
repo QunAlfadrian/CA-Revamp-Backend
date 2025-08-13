@@ -15,10 +15,10 @@ return new class extends Migration {
             $table->string('description', 255);
             $table->unsignedSmallInteger('requested_quantity')->default(0);
             $table->unsignedSmallInteger('donated_quantity')->default(0);
-            $table->foreignUuid('campaign_id')->constrained(
-                'campaigns', 'id'
-            )->cascadeOnDelete();
+            $table->string('campaign_id', 15);
             $table->timestamps();
+
+            // foreign key constraints
         });
     }
 

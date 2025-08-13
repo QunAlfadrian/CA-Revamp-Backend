@@ -14,9 +14,7 @@ return new class extends Migration {
             // $table->uuid('id')->primary();
             $table->uuid('id')->primary();
             $table->string('order_id', 25);
-            $table->foreignUuid('campaign_id')->constrained(
-                'campaigns', 'id'
-            )->cascadeOnDelete();
+            $table->string('campaign_id', 15);
             $table->foreignUuid('donation_id')->constrained(
                 'donations', 'id'
             );
@@ -27,6 +25,9 @@ return new class extends Migration {
             $table->string('snap_token', 50)->nullable();
             $table->string('redirect_url', 100)->nullable();
             $table->timestamps();
+
+            // foreign key constraints
+            $table->foreign('campaign_id')->references('campaign_id')->on('campaigns');
         });
     }
 

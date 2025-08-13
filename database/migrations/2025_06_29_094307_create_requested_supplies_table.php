@@ -23,12 +23,13 @@ return new class extends Migration {
                 'not_received',
                 'cancelled'
             ])->default('pending_verification');
-            $table->foreignUuid('campaign_id')->nullable();
+            $table->string('campaign_id', 15)->nullable()->default(null);
             $table->string('reviewed_by', 14)->nullable()->default(null);
             $table->timestamp('reviewed_at')->nullable()->default(null);
             $table->timestamps();
 
             // foreign key constraints
+            $table->foreign('campaign_id')->references('campaign_id')->on('campaigns');
             $table->foreign('reviewed_by')->references('user_id')->on('users');
         });
     }

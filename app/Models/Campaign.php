@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToManyBooks;
-use App\Traits\HasManyDonations;
-use App\Traits\HasManyFacilities;
-use App\Traits\HasManyFunds;
-use App\Traits\HasManyRequestedSupplies;
-use App\Traits\HasOrganizer;
+use Carbon\Carbon;
 use App\Traits\HasReviewer;
 use Illuminate\Support\Str;
+use App\Traits\HasManyFunds;
+use App\Traits\HasOrganizer;
 use App\Traits\ModelHelpers;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\HasManyDonations;
+use App\Traits\HasManyFacilities;
+use App\Traits\BelongsToManyBooks;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasManyRequestedSupplies;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 
 class Campaign extends Model {
     use HasFactory;
@@ -29,6 +31,7 @@ class Campaign extends Model {
     use HasManyRequestedSupplies;
     use HasManyFacilities;
 
+    protected $primaryKey = 'campaign_id';
     public $keyType = 'string';
     public $incrementing = false;
 
@@ -36,7 +39,27 @@ class Campaign extends Model {
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = Str::uuid();
+            // $model->id = Str::uuid();
+            $latestCampaign = Campaign::where('type', $model->type())
+                ->orderBy('campaign_id', 'desc')
+                ->first();
+
+            if ($latestCampaign) {
+                $latestDateCreated = Carbon::createFromFormat('ymd', substr($latestCampaign->id(), 5, 6));
+                if ($latestDateCreated->isToday()) {
+                    $latestID = intval(substr($latestCampaign->id(), -4));
+                    $nextID = $latestID + 1;
+                } else {
+                    $nextID = 1;
+                }
+            } else {
+                $nextID = 1;
+            }
+
+            $date = Carbon::today()->format('ymd');
+            $type = $model->type() === 'fundraiser' ? 'F' : 'P';
+
+            $model->campaign_id = 'CA_C' . $type . $date . sprintf("%04d", $nextID);
         });
     }
 
@@ -64,7 +87,7 @@ class Campaign extends Model {
     }
 
     public function id(): string {
-        return (string)$this->id;
+        return $this->campaign_id;
     }
 
     public function type(): string {

@@ -20,7 +20,7 @@ trait HasManyCampaigns {
             throw new \Exception('Only organizer can access this resources.');
         }
 
-        return $this->hasMany(Campaign::class, 'organizer_id');
+        return $this->hasMany(Campaign::class, 'organizer_id', 'user_id');
     }
 
     public function isOrganizerOf(Campaign $campaign): bool {

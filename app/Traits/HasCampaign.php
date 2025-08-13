@@ -11,7 +11,7 @@ trait HasCampaign {
     }
 
     public function campaignRelation(): BelongsTo {
-        return $this->belongsTo(Campaign::class, 'campaign_id');
+        return $this->belongsTo(Campaign::class, 'campaign_id', 'campaign_id');
     }
 
     public function isPartOfCampaign(Campaign $campaign): bool {

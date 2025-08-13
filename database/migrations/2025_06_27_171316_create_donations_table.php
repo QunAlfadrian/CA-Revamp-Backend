@@ -13,9 +13,7 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->string('donor_id', 14)->nullable()->default(null);
             $table->string('donor_name', 50)->nullable()->default(null);
-            $table->foreignUuid('campaign_id')->constrained(
-                'campaigns', 'id'
-            )->cascadeOnDelete();
+            $table->string('campaign_id', 15);
             $table->enum('type', [
                 'fund',
                 'item'
@@ -25,6 +23,7 @@ return new class extends Migration {
 
             // Foreign key constraints
             $table->foreign('donor_id')->references('user_id')->on('users');
+            $table->foreign('campaign_id')->references('campaign_id')->on('campaigns');
         });
     }
 

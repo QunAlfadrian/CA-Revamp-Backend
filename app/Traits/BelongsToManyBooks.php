@@ -43,7 +43,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
         // if not already requesting the book, create a new pivot
         if (!$this->isRequestingBook($book)) {
-            $this->booksRelation()->attach($book->isbn, [
+            $this->booksRelation()->attach($book->isbn(), [
                 'requested_quantity' => $amount
             ]);
             return $this->save();
