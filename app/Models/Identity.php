@@ -13,6 +13,7 @@ class Identity extends Model {
     /* Relationship Helpers */
     use HasUser;
 
+    protected $primaryKey = 'identity_id';
     public $keyType = 'string';
     public $incrementing = false;
 
@@ -20,7 +21,8 @@ class Identity extends Model {
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = Str::uuid();
+            $user = $model->user();
+            $model->identity_id = 'CA_ID_' . substr($user->id(), 3);
         });
     }
 
@@ -42,7 +44,7 @@ class Identity extends Model {
     }
 
     public function id(): string {
-        return (string)$this->id;
+        return $this->identity_id;
     }
 
     public function fullName(): string {

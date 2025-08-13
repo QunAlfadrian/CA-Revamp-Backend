@@ -11,7 +11,7 @@ trait HasOrganizer {
     }
 
     public function organizerRelation(): BelongsTo {
-        return $this->belongsTo(User::class, 'organizer_id');
+        return $this->belongsTo(User::class, 'organizer_id', 'user_id');
     }
 
     public function isOrganizedBy(User $user) {

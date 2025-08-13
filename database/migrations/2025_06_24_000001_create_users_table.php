@@ -11,11 +11,10 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('users', function (Blueprint $table) {
             $table->string('user_id', 14)->primary();
-            $table->string('name')->unique();
-            $table->string('email')->unique();
+            $table->string('name', 25)->unique();
+            $table->string('email', 50)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            // $table->foreignUuid('role_id')->constrained();
             $table->rememberToken();
             $table->timestamps();
         });

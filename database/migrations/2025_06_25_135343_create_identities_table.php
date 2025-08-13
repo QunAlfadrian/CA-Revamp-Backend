@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::create('identities', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->string('identity_id', 17)->primary();
             $table->string('user_id', 14);
             $table->string('full_name', 127);
             $table->string('phone_number', 15)->nullable();

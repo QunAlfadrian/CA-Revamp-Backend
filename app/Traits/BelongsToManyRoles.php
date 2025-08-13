@@ -17,7 +17,8 @@ trait BelongsToManyRoles {
      */
     public function roleRelation(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id')
+            ->withTimestamps();
     }
 
     public function isActingAs(Role $role): bool {

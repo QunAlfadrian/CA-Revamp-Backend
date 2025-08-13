@@ -11,7 +11,7 @@ trait HasReviewer {
     }
 
     public function reviewerRelation(): BelongsTo {
-        return $this->belongsTo(User::class, 'reviewed_by');
+        return $this->belongsTo(User::class, 'reviewed_by', 'user_id');
     }
 
     public function isReviewedBy(User $user) {

@@ -11,7 +11,7 @@ trait HasDonor {
     }
 
     public function donorRelation(): BelongsTo {
-        return $this->belongsTo(User::class, 'donor_id');
+        return $this->belongsTo(User::class, 'donor_id', 'user_id');
     }
 
     public function isDonatedBy(User $user): bool {
