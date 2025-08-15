@@ -21,6 +21,7 @@ class Donation extends Model {
     use HasDonor;
     use HasCampaign;
 
+    protected $primaryKey = 'donation_id';
     public $keyType = 'string';
     public $incrementing = false;
 
@@ -28,7 +29,20 @@ class Donation extends Model {
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = Str::uuid();
+            $campaign = $model->campaign();
+            $latestDonation = $campaign
+                ->donationsRelation()
+                ->orderBy('donation_id', 'desc')
+                ->first();
+
+            if ($latestDonation) {
+                $latestID = hexdec(substr($campaign->id(), -4));
+                $nextID = $latestID + 1;
+            } else {
+                $nextID = 1;
+            }
+
+            $model->donation_id = $campaign->id() . 'D' . sprintf("%05X", $nextID);
         });
     }
 
@@ -47,7 +61,7 @@ class Donation extends Model {
     }
 
     public function id(): string {
-        return (string)$this->id;
+        return (string)$this->donationd_id;
     }
 
     public function donorName(): ?string {

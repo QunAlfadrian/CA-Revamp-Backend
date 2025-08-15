@@ -11,7 +11,7 @@ trait HasManyDonations {
     }
 
     public function donationsRelation(): HasMany {
-        return $this->hasMany(Donation::class, 'campaign_id');
+        return $this->hasMany(Donation::class, 'campaign_id', 'campaign_id');
     }
 
     public function hasDonation(Donation $donation): bool {

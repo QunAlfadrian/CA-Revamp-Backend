@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::create('donations', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->string('donation_id', 19)->primary();
             $table->string('donor_id', 14)->nullable()->default(null);
             $table->string('donor_name', 50)->nullable()->default(null);
             $table->string('campaign_id', 15);

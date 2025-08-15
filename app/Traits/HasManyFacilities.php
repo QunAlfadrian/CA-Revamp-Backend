@@ -11,7 +11,7 @@ trait HasManyFacilities {
     }
 
     public function facilitiesRelation(): HasMany {
-        return $this->hasMany(Facility::class);
+        return $this->hasMany(Facility::class, 'campaign_id', 'campaign_id');
     }
 
     public function attachFacility(Facility $facility) {

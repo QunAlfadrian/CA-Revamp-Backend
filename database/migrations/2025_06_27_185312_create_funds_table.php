@@ -15,9 +15,7 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->string('order_id', 25);
             $table->string('campaign_id', 15);
-            $table->foreignUuid('donation_id')->constrained(
-                'donations', 'id'
-            );
+            $table->string('donation_id', 19);
             $table->decimal('amount', 10, 0)->default(5000);
             $table->decimal('service_fee', 4, 0)->default(0);
             $table->enum('status', array_map(fn($status) => $status->value, FundStatus::cases()))
@@ -28,6 +26,7 @@ return new class extends Migration {
 
             // foreign key constraints
             $table->foreign('campaign_id')->references('campaign_id')->on('campaigns');
+            $table->foreign('donation_id')->references('donation_id')->on('donations');
         });
     }
 

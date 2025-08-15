@@ -12,7 +12,7 @@ trait HasManyFunds {
     }
 
     public function fundsRelation(): HasMany {
-        return $this->hasMany(Fund::class);
+        return $this->hasMany(Fund::class, 'donation_id', 'donation_id');
     }
 
     public function addFund(Fund $fund) {

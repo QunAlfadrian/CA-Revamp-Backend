@@ -11,7 +11,7 @@ trait HasDonation {
     }
 
     public function donationRelation(): BelongsTo {
-        return $this->belongsTo(Donation::class, 'donation_id');
+        return $this->belongsTo(Donation::class, 'donation_id', 'donation_id');
     }
 
     public function partOfDonation(Donation $donation): bool {

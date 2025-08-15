@@ -11,7 +11,7 @@ trait HasManyDonatedItems {
     }
 
     public function donatedItemsRelation(): HasMany {
-        return $this->hasMany(DonatedItem::class);
+        return $this->hasMany(DonatedItem::class, 'donation_id', 'donation_id');
     }
 
     public function addDonatedItem(DonatedItem $item) {

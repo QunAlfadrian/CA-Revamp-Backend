@@ -47,7 +47,7 @@ class Campaign extends Model {
             if ($latestCampaign) {
                 $latestDateCreated = Carbon::createFromFormat('ymd', substr($latestCampaign->id(), 5, 6));
                 if ($latestDateCreated->isToday()) {
-                    $latestID = intval(substr($latestCampaign->id(), -4));
+                    $latestID = intval(substr($latestCampaign->id(), -2));
                     $nextID = $latestID + 1;
                 } else {
                     $nextID = 1;
@@ -59,7 +59,7 @@ class Campaign extends Model {
             $date = Carbon::today()->format('ymd');
             $type = $model->type() === 'fundraiser' ? 'F' : 'P';
 
-            $model->campaign_id = 'CA_C' . $type . $date . sprintf("%04d", $nextID);
+            $model->campaign_id = 'CA_C' . $type . $date . sprintf("%02d", $nextID);
         });
     }
 

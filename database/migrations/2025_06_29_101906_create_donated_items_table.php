@@ -12,9 +12,7 @@ return new class extends Migration {
         Schema::create('donated_items', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('campaign_id', 15);
-            $table->foreignUuid('donation_id')->constrained(
-                'donations', 'id'
-            );
+            $table->string('donation_id', 19);
             $table->unsignedSmallInteger('donated_item_quantity')->default(0);
             $table->text('package_picture_url')->nullable();
             $table->enum('delivery_service', [
@@ -42,6 +40,7 @@ return new class extends Migration {
 
             // foreign key constraints
             $table->foreign('campaign_id')->references('campaign_id')->on('campaigns');
+            $table->foreign('donation_id')->references('donation_id')->on('donations');
             $table->foreign('reviewed_by')->references('user_id')->on('users');
         });
     }
