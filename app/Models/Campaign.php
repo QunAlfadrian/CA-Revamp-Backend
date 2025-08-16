@@ -29,7 +29,7 @@ class Campaign extends Model {
     use HasManyDonations;
     use BelongsToManyBooks;
     use HasManyRequestedSupplies;
-    use HasManyFacilities;
+    // use HasManyFacilities;
 
     protected $primaryKey = 'campaign_id';
     public $keyType = 'string';

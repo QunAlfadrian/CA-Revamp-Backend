@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use Throwable;
 use App\Models\Book;
-use App\Models\Facility;
+use App\Models\supply;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\ImageService;
 use App\Http\Services\PaginateService;
 use App\Http\Resources\V1\CampaignResource;
+use App\Models\RequestedSupply;
 
 class ProductDonationController extends Controller {
     public function __construct(
@@ -47,17 +48,16 @@ class ProductDonationController extends Controller {
                 'books' => 'nullable|array',
                 'books.*.isbn' => 'required_with:books|string|min:10|max:13|exists:books,isbn',
                 'books.*.quantity' => 'required_with:books|numeric|min:1|max:10',
-                'facilities' => 'nullable|array',
-                'facilities.*.name' => 'required_with:facilities|string|min:5|max:50',
-                'facilities.*.description' => 'required_with:facilities|string|min:25|max:255',
-                'facilities.*.quantity' => 'required_with:facilities|numeric|min:1|max:10'
+                'supplies' => 'nullable|array',
+                'supplies.*.name' => 'required_with:supplies|string|min:5|max:50',
+                'supplies.*.description' => 'required_with:supplies|string|min:25|max:255',
+                'supplies.*.quantity' => 'required_with:supplies|numeric|min:1|max:10'
             ];
         }
 
         $request->validate($rules);
 
         DB::beginTransaction();
-
         try {
             $user = auth()->user();
             $user->campaignsRelation()->create([
@@ -100,7 +100,7 @@ class ProductDonationController extends Controller {
             if ($request->input('selection_mode') === 'manual' && $request->filled('books')) {
                 $books = $request->input('books');
                 foreach ($books as $book) {
-                    $bookInstance = Book::where('isbn', $book['isbn'])->firstOrFail();
+                    $bookInstance = Book::find($book['isbn']);
                     $campaign->requestBook(
                         $bookInstance,
                         $book['quantity']
@@ -109,16 +109,16 @@ class ProductDonationController extends Controller {
                 $campaign->refresh();
             }
 
-            // store facilities if any
-            if ($request->input('selection_mode') === 'manual' && $request->filled('facilities')) {
-                $facilities = $request->input('facilities');
-                foreach ($facilities as $facility) {
-                    $facilityInstance = Facility::make([
-                        'name' => $facility['name'],
-                        'description' => $facility['description'],
-                        'requested_quantity' => $facility['quantity']
+            // store supplies if any
+            if ($request->input('selection_mode') === 'manual' && $request->filled('supplies')) {
+                $supplies = $request->input('supplies');
+                foreach ($supplies as $supply) {
+                    $supplyInstance = RequestedSupply::make([
+                        'name' => $supply['name'],
+                        'description' => $supply['description'],
+                        'requested_quantity' => $supply['quantity']
                     ]);
-                    $campaign->attachFacility($facilityInstance);
+                    $campaign->requestSupply($supplyInstance);
                 }
                 $campaign->refresh();
             }

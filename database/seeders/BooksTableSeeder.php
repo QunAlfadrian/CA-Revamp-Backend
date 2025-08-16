@@ -34,9 +34,10 @@ class BooksTableSeeder extends Seeder {
             'Before We Say Goodbye'
         ];
 
+        $count = 1;
         foreach ($books as $title) {
             Book::create([
-                'isbn' => fake()->isbn13(),
+                'isbn' => sprintf("%013d", $count),
                 'title' => $title,
                 'slug' => Str::slug($title),
                 'synopsis' => fake()->paragraph(random_int(3, 6)),
@@ -46,6 +47,8 @@ class BooksTableSeeder extends Seeder {
                 'cover_image_url' => 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1492877223i/28952640.jpg',
                 'price' => random_int(60, 105) * 10000,
             ]);
+
+            $count++;
         }
     }
 }

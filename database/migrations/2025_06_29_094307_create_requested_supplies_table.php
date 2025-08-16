@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::create('requested_supplies', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->string('requested_supply_id', 16)->primary();
             $table->string('name', 255);
             $table->text('description', 1024);
             $table->decimal('price', 10, 0)->default(0)->nullable();

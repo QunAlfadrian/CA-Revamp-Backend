@@ -11,7 +11,7 @@ trait HasManyRequestedSupplies {
     }
 
     public function requestedSuppliesRelation(): HasMany {
-        return $this->hasMany(RequestedSupply::class);
+        return $this->hasMany(RequestedSupply::class, 'campaign_id', 'campaign_id');
     }
 
     public function isRequestingSupply(RequestedSupply $supply): bool {

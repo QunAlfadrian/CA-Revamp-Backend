@@ -82,8 +82,6 @@ class User extends Authenticatable {
         parent::boot();
 
         static::creating(function ($model) {
-            // $model->id = Str::uuid();
-
             $latestUser = self::orderBy('user_id', 'desc')->first();
 
             // check if latest user created today

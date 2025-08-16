@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Traits\HasCampaign;
 use App\Traits\HasReviewer;
 use Illuminate\Support\Str;
@@ -18,6 +19,7 @@ class RequestedSupply extends Model {
     use HasCampaign;
     use HasReviewer;
 
+    protected $primaryKey = 'requested_supply_id';
     public $keyType = 'string';
     public $incrementing = false;
 
@@ -25,7 +27,22 @@ class RequestedSupply extends Model {
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = Str::uuid();
+            $latestModel = self::orderBy('created_at', 'desc')->first();
+
+            if ($latestModel) {
+                $latestDateCreated = Carbon::createFromFormat('ymd', substr($latestModel->id(), 6, 6));
+                if ($latestDateCreated->isToday()) {
+                    $latestID = hexdec(substr($latestModel->id(), -4));
+                    $nextID = $latestID + 1;
+                } else {
+                    $nextID = 1;
+                }
+            } else {
+                $nextID = 1;
+            }
+
+            $date = Carbon::today()->format('ymd');
+            $model->requested_supply_id = 'CA_SUP' . $date . sprintf("%04X", $nextID);
         });
     }
 
@@ -40,6 +57,10 @@ class RequestedSupply extends Model {
         'last_reviewed_by',
         'last_reviewed_at'
     ];
+
+    public function id(): string {
+        return $this->requested_supply_id;
+    }
 
     public function name(): string {
         return $this->name;
@@ -73,5 +94,4 @@ class RequestedSupply extends Model {
     public function updatedAt(): string {
         return $this->updated_at ? $this->updated_at->format('d-m-Y H:i:s') : '';
     }
-
 }
