@@ -130,7 +130,7 @@ class FundraiserController extends Controller {
             $fund = $donation->fundsRelation()->create([
                 'campaign_id' => $campaign->id(),
                 'donation_id' => $donation->id(),
-                'order_id' => $orderId,
+                'fund_id' => $orderId,
                 'amount' => $request->input('fund_amount'),
                 'service_fee' => $serviceFee
             ]);

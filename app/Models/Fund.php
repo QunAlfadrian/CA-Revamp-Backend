@@ -18,20 +18,12 @@ class Fund extends Model {
     use HasCampaign;
     use HasDonation;
 
+    protected $primaryKey = 'fund_id';
     public $keyType = 'string';
     public $incrementing = false;
 
-    public static function booted() {
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->id = Str::uuid();
-        });
-    }
-
     protected $fillable = [
-        'id',
-        'order_id',
+        'fund_id',
         'campaign_id',
         'donation_id',
         'amount',
@@ -46,11 +38,11 @@ class Fund extends Model {
     ];
 
     public function id(): string {
-        return $this->id;
+        return $this->fund_id;
     }
 
     public function orderId(): string {
-        return $this->id;
+        return $this->fund_id;
     }
 
     public function amount(): string {
