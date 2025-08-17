@@ -10,8 +10,17 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::create('donated_books', function (Blueprint $table) {
-            $table->id();
+            $table->string('donated_item_id');
+            $table->string('book_id', 13);
+            $table->unsignedSmallInteger('quantity')->default(0);
             $table->timestamps();
+
+            // primary key constraint
+            $table->primary(['donated_item_id', 'book_id']);
+
+            // foreign key constraints
+            $table->foreign('donated_item_id')->references('id')->on('donated_items');
+            $table->foreign('book_id')->references('isbn')->on('books');
         });
     }
 

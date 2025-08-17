@@ -5,7 +5,7 @@ namespace App\Traits;
 use App\Models\Book;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-    trait BelongsToManyBooks {
+trait CampaignBelongsToManyBooks {
     public function books() {
         return $this->booksRelation;
     }

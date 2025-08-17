@@ -11,6 +11,6 @@ trait BelongsToManyCampaigns {
     }
 
     public function campaignsRelation(): BelongsToMany {
-        return $this->belongsToMany(Campaign::class, 'requested_books', 'book_id', 'campaign_id');
+        return $this->belongsToMany(Campaign::class, 'requested_books', 'campaign_id', 'book_id');
     }
 }

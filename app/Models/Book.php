@@ -2,12 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToManyCampaigns;
+use App\Traits\BookBelongsToManyDonation;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Book extends Model {
+    // model helper
     use HasFactory;
+
+    // relationship helper
+    use BelongsToManyCampaigns;
+    use BookBelongsToManyDonation;
 
     public $primaryKey = 'isbn';
     public $keyType = 'string';

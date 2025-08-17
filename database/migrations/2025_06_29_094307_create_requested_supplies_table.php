@@ -16,13 +16,6 @@ return new class extends Migration {
             $table->decimal('price', 10, 0)->default(0)->nullable();
             $table->unsignedSmallInteger('requested_quantity')->default(0);
             $table->unsignedSmallInteger('donated_quantity')->default(0);
-            $table->enum('status', [
-                'pending_verification',
-                'on_delivery',
-                'received',
-                'not_received',
-                'cancelled'
-            ])->default('pending_verification');
             $table->string('campaign_id', 15)->nullable()->default(null);
             $table->string('reviewed_by', 14)->nullable()->default(null);
             $table->timestamp('reviewed_at')->nullable()->default(null);

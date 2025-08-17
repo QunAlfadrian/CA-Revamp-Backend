@@ -7,11 +7,12 @@ use App\Models\Book;
 use App\Models\supply;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\RequestedSupply;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\ImageService;
+use Illuminate\Support\Facades\Log;
 use App\Http\Services\PaginateService;
 use App\Http\Resources\V1\CampaignResource;
-use App\Models\RequestedSupply;
 
 class ProductDonationController extends Controller {
     public function __construct(
@@ -47,11 +48,11 @@ class ProductDonationController extends Controller {
                 'attributes.requested_item_quantity' => 'required|numeric|min:1|max:500',
                 'books' => 'nullable|array',
                 'books.*.isbn' => 'required_with:books|string|min:10|max:13|exists:books,isbn',
-                'books.*.quantity' => 'required_with:books|numeric|min:1|max:10',
+                'books.*.quantity' => 'required_with:books|numeric|min:1|max:99',
                 'supplies' => 'nullable|array',
                 'supplies.*.name' => 'required_with:supplies|string|min:5|max:50',
                 'supplies.*.description' => 'required_with:supplies|string|min:25|max:255',
-                'supplies.*.quantity' => 'required_with:supplies|numeric|min:1|max:10'
+                'supplies.*.quantity' => 'required_with:supplies|numeric|min:1|max:99'
             ];
         }
 
@@ -126,7 +127,6 @@ class ProductDonationController extends Controller {
             //
 
             DB::commit();
-
             return response()->json([
                 'success' => true,
                 'message' => 'Campaign successfully created',
@@ -134,11 +134,11 @@ class ProductDonationController extends Controller {
             ], 201);
         } catch (Throwable $e) {
             DB::rollBack();
-
+            Log::error($e);
             return response()->json([
                 'error' => 'unprocessable_content',
                 'message' => $e->getMessage()
-            ], 403);
+            ], 500);
         }
     }
 

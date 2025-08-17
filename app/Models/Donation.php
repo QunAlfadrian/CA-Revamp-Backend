@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
+use App\Traits\CampaignBelongsToManyBooks;
+use App\Traits\DonationBelongsToManyBooks;
 use App\Traits\HasCampaign;
-use App\Traits\HasDonation;
 use App\Traits\HasDonor;
 use App\Traits\HasManyDonatedItems;
 use App\Traits\HasManyFunds;

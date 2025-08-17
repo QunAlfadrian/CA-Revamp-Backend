@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Services\MidtransService;
 use App\Http\Resources\V1\DonationCollection;
 use App\Models\Book;
+use App\Models\RequestedSupply;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DonationController extends Controller {
     public function __construct(private ImageService $imageService) {
@@ -123,10 +125,9 @@ class DonationController extends Controller {
                 'books.*.isbn' => 'string|min:10|max:13|exists:books,isbn',
                 'books.*.quantity' => 'integer|min:1|max:99',
 
-                'facilities' => 'nullable|array',
-                'facilities.*.name' => 'string|max:25',
-                'facilities.*.description' => 'string|max:255',
-                'facilities.*.requested_quantity' => 'int|min:1|max:10',
+                'supplies' => 'nullable|array',
+                'supplies.*.id' => 'string|max:25',
+                'supplies.*.quantity' => 'int|min:1|max:10',
 
                 'package_picture' => 'required|image|max:5048',
                 'delivery_service' => 'required|string|in:pos_indonesia,jne,sicepat,anteraja,lion_parcel,spx_express,dhl',
@@ -169,7 +170,7 @@ class DonationController extends Controller {
                 // create donated items instance
                 $donatedItems = $donation->donatedItemsRelation()->create([
                     'campaign_id' => $campaign->id(),
-                    'donated_item_quantity' => 0,
+                    'quantity' => 0,
                     'delivery_service' => $request->input('delivery_service'),
                     'resi' => $request->input('resi'),
                 ]);
@@ -181,7 +182,8 @@ class DonationController extends Controller {
                         : Str::slug($request->input('username'));
                     $image = $request->file('package_picture');
                     $filename = 'package-' . $slug . "-" . now()->format('YmdHis') . ".webp";
-                    $path = "images/donations/products/$campaign->id()/";
+                    $campaignId = $campaign->id();
+                    $path = "images/donations/products/$campaignId/";
 
                     $this->imageService->storeImage(
                         $image,
@@ -195,9 +197,23 @@ class DonationController extends Controller {
                     ]);
                 }
 
-                // create donated book instances
+                // get or create donated book instances
+                $books = $request->input('books');
+                if ($books) {
+                    foreach ($books as $book) {
+                        $bookInstance = Book::findOrFail($book['isbn']);
+                        $donatedItems->attachBook($bookInstance, $book['quantity']);
+                    }
+                }
 
-                // create donated facilities instances
+                // create donated supplies instances
+                $supplies = $request->input('supplies');
+                if ($supplies) {
+                    foreach ($supplies as $supply) {
+                        $requestedSupply = RequestedSupply::findOrFail($supply['id']);
+                        $donatedItems->attachSupply($requestedSupply, $supply['quantity']);
+                    }
+                }
 
                 // update donated items instance quantity
 
@@ -224,6 +240,7 @@ class DonationController extends Controller {
                 ], 200);
             } catch (Exception $e) {
                 DB::rollBack();
+                Log::error($e);
                 return response()->json([
                     "message" => $e->getMessage(),
                     "error" => "Internal server error",

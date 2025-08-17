@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\DonatedItemBelongsToManyRequestedSupply;
 use App\Traits\HasCampaign;
 use App\Traits\HasDonation;
 use App\Traits\HasReviewer;
 use Illuminate\Support\Str;
 use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\DonationBelongsToManyBooks;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DonatedItem extends Model {
@@ -19,6 +21,8 @@ class DonatedItem extends Model {
     use HasCampaign;
     use HasDonation;
     use HasReviewer;
+    use DonationBelongsToManyBooks;
+    use DonatedItemBelongsToManyRequestedSupply;
 
     public $keyType = 'string';
     public $incrementing = false;
@@ -34,7 +38,7 @@ class DonatedItem extends Model {
     protected $fillable = [
         'campaign_id',
         'donor_id',
-        'donated_item_quantity',
+        'quantity',
         'package_picture_url',
         'delivery_service',
         'resi',
@@ -45,8 +49,8 @@ class DonatedItem extends Model {
         return $this->id;
     }
 
-    public function donatedItemQuantity(): string {
-        return (string)$this->donated_item_quantity;
+    public function quantity(): string {
+        return (string)$this->quantity;
     }
 
     public function packagePictureUrl(): string {

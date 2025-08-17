@@ -22,7 +22,6 @@ class SupplyResource extends JsonResource {
                 'price' => $this->price(),
                 'requested_quantity' => $this->requestedQuantity(),
                 'donated_quantity' => $this->donatedQuantity(),
-                'status' => $this->status(),
             ]
         ];
     }

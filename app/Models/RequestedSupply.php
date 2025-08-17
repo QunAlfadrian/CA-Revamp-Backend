@@ -7,6 +7,7 @@ use App\Traits\HasCampaign;
 use App\Traits\HasReviewer;
 use Illuminate\Support\Str;
 use App\Traits\ModelHelpers;
+use App\Traits\RequestedSupplyBelongsToManyDonatedItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -18,6 +19,7 @@ class RequestedSupply extends Model {
     /** Relationship Helpers */
     use HasCampaign;
     use HasReviewer;
+    use RequestedSupplyBelongsToManyDonatedItem;
 
     protected $primaryKey = 'requested_supply_id';
     public $keyType = 'string';
@@ -81,11 +83,6 @@ class RequestedSupply extends Model {
     public function donatedQuantity(): string {
         return (string)$this->donated_quantity;
     }
-
-    public function status(): string {
-        return $this->status;
-    }
-
 
     public function createdAt(): string {
         return $this->created_at ? $this->created_at->format('d-m-Y H:i:s') : '';

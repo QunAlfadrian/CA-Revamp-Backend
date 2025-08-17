@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->string('campaign_id', 15);
             $table->string('donation_id', 19);
-            $table->unsignedSmallInteger('donated_item_quantity')->default(0);
+            $table->unsignedSmallInteger('quantity')->default(0);
             $table->text('package_picture_url')->nullable();
             $table->enum('delivery_service', [
                 'pos_indonesia',

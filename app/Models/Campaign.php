@@ -4,18 +4,15 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use App\Traits\HasReviewer;
-use Illuminate\Support\Str;
 use App\Traits\HasManyFunds;
 use App\Traits\HasOrganizer;
 use App\Traits\ModelHelpers;
 use App\Traits\HasManyDonations;
-use App\Traits\HasManyFacilities;
-use App\Traits\BelongsToManyBooks;
+use App\Traits\CampaignBelongsToManyBooks;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasManyRequestedSupplies;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\DB;
 
 class Campaign extends Model {
     use HasFactory;
@@ -27,7 +24,7 @@ class Campaign extends Model {
     use HasReviewer;
     use HasManyFunds;
     use HasManyDonations;
-    use BelongsToManyBooks;
+    use CampaignBelongsToManyBooks;
     use HasManyRequestedSupplies;
     // use HasManyFacilities;
 
@@ -132,5 +129,9 @@ class Campaign extends Model {
 
     public function donatedItemQuantity(): string {
         return $this->donated_item_quantity;
+    }
+
+    public static function findBySlug(string $slug): ?Campaign {
+        return self::where('slug', $slug)->first();
     }
 }
