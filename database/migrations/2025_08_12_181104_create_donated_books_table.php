@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->primary(['donated_item_id', 'book_id']);
 
             // foreign key constraints
-            $table->foreign('donated_item_id')->references('id')->on('donated_items');
+            $table->foreign('donated_item_id')->references('donated_item_id')->on('donated_items');
             $table->foreign('book_id')->references('isbn')->on('books');
         });
     }

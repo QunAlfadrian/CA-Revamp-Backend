@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::create('donated_items', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->string('donated_item_id', 25)->primary();
             $table->string('campaign_id', 15);
             $table->string('donation_id', 19);
             $table->unsignedSmallInteger('quantity')->default(0);

@@ -11,7 +11,7 @@ trait BelongsToDonatedItem {
     }
 
     public function donatedItemRelation(): BelongsTo {
-        return $this->belongsTo(DonatedItem::class, 'donated_item_id', 'id');
+        return $this->belongsTo(DonatedItem::class, 'donated_item_id', 'donated_item_id');
     }
 
     public function associatedTo(DonatedItem $model) {

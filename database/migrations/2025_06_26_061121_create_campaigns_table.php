@@ -17,7 +17,7 @@ return new class extends Migration {
                 'product_donation'
             ])->default('fundraiser');
             $table->string('title', 255)->unique();
-            $table->string('slug', 50)->unique();
+            $table->string('slug', 15)->unique();
             $table->text('description');
             $table->text('header_image_url')->nullable()->default(null);
             $table->enum('status', [

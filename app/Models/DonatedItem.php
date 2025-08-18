@@ -24,6 +24,7 @@ class DonatedItem extends Model {
     use DonationBelongsToManyBooks;
     use DonatedItemBelongsToManyRequestedSupply;
 
+    protected $primaryKey = 'donated_item_id';
     public $keyType = 'string';
     public $incrementing = false;
 
@@ -31,7 +32,8 @@ class DonatedItem extends Model {
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = Str::uuid();
+            $campaign = Campaign::find($model->campaign_id);
+            $model->donated_item_id = $campaign->slug() . '-' . now()->timestamp;
         });
     }
 
@@ -46,7 +48,7 @@ class DonatedItem extends Model {
     ];
 
     public function id(): string {
-        return $this->id;
+        return $this->donated_item_id;
     }
 
     public function quantity(): string {

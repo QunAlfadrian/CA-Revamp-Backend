@@ -21,7 +21,7 @@ return new class extends Migration {
             // foreign key constraints
             $table
                 ->foreign('donated_item_id')
-                ->references('id')
+                ->references('donated_item_id')
                 ->on('donated_items');
             $table
                 ->foreign('requested_supply_id')
