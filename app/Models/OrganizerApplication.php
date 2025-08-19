@@ -19,6 +19,7 @@ class OrganizerApplication extends Model {
     use HasApplicant;
     use HasReviewer;
 
+    protected $primaryKey = 'organizer_application_id';
     public $keyType = 'string';
     public $incrementing = false;
 
@@ -26,7 +27,7 @@ class OrganizerApplication extends Model {
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = Str::uuid();
+            $model->organizer_application_id = $model->applicant()->id();
         });
     }
 
@@ -45,7 +46,7 @@ class OrganizerApplication extends Model {
     }
 
     public function id(): string {
-        return $this->id;
+        return $this->organizer_application_id;
     }
 
     public function status(): string {

@@ -26,7 +26,6 @@ class Campaign extends Model {
     use HasManyDonations;
     use CampaignBelongsToManyBooks;
     use HasManyRequestedSupplies;
-    // use HasManyFacilities;
 
     protected $primaryKey = 'campaign_id';
     public $keyType = 'string';

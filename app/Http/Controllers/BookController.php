@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\V1\BookCollection;
-use App\Http\Resources\V1\BookResource;
 use App\Models\Book;
+use App\Models\Role;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use App\Http\Services\ImageService;
 use App\Http\Services\PaginateService;
-use App\Models\Role;
+use App\Http\Resources\V1\BookResource;
+use App\Http\Resources\V1\BookCollection;
+use Exception;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BookController extends Controller {
     public function __construct(
@@ -59,8 +64,17 @@ class BookController extends Controller {
                 $query->orWhere($field, 'like', '%' . $term . '%');
             }
         }
+        Log::info($query);
 
-        return new BookCollection($query->paginate(10));
+        try {
+            $collection = new BookCollection($query->paginate(10));
+            return $collection;
+        } catch (NotFoundHttpException $e) {
+            return response()->json([
+                'success' => true,
+                'data' => null
+            ], 200);
+        }
     }
 
     /**
@@ -70,7 +84,7 @@ class BookController extends Controller {
         $user = auth()->user();
         if (!($user->isActingAs(Role::admin()) || $user->isActingAs(Role::organizer()))) {
             return response()->json([
-                'error' => 'true',
+                'error' => 'unauthorized',
                 'message' => 'You do not have permission to access this resource'
             ], 403);
         }
@@ -104,22 +118,7 @@ class BookController extends Controller {
 
         // store and update cover image
         if ($request->hasFile('cover_image')) {
-            $slug = $book->slug;
-            $image = $request->file('cover_image');
-            $filename = 'cover-' . $slug . "-" . now()->format('YmdHis') . ".webp";
-            $path = 'images/books/';
-
-            $this->imageService->storeImage(
-                $image,
-                $filename,
-                $path,
-                75,
-            );
-
-            $book = Book::find($request->isbn)->first();
-            $book->update([
-                'cover_image_url' => asset($path . $filename)
-            ]);
+            $this->storeCoverImage($request, $book);
         }
 
         return response()->json([
@@ -142,17 +141,106 @@ class BookController extends Controller {
      * Update the specified resource in storage.
      */
     public function update(Request $request, Book $book) {
+        $user = auth()->user();
+        if (!($user->isActingAs(Role::admin()) || $user->isActingAs(Role::superAdmin()))) {
+            return response()->json([
+                'error' => 'unauthorized',
+                'message' => 'You do not have permission to access this resource'
+            ], 403);
+        }
+
+        $rules = [
+            'title' => 'sometimes|string|max:255|unique:books,title',
+            'synopsis' => 'sometimes|string|max:2048',
+            'author_1' => 'sometimes|string|max:255',
+            'author_2' => 'nullable|string|max:255',
+            'author_3' => 'nullable|string|max:255',
+            'published_year' => 'sometimes|string|max:4',
+            'cover_image' => 'sometimes|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'price' => 'sometimes|numeric|max:1000000'
+        ];
+
+        DB::beginTransaction();
+        try {
+            $validated = $request->validate($rules);
+            $book->update($validated);
+
+            if ($request->hasFile('cover_image')) {
+                $this->deleteCoverImage($book);
+                $this->storeCoverImage($request, $book);
+            }
+
+            DB::commit();
+
+            $book->refresh();
+            return response()->json([
+                'success' => true,
+                'data' => new BookResource($book)
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error($e);
+            return response()->json([
+                'error' => $e->getMessage(),
+                'message' => 'Internal Server Error'
+            ], 500);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Book $book) {
+        $user = auth()->user();
+        if (!($user->isActingAs(Role::admin()) || $user->isActingAs(Role::organizer()))) {
+            return response()->json([
+                'error' => 'unauthorized',
+                'message' => 'You do not have permission to access this resource'
+            ], 403);
+        }
+        
         // get data for response
         $title = $book->title();
         $isbn = $book->isbn();
 
         // delete cover image from storage
+        $this->deleteCoverImage($book);
+
+        $book->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully deleted book ' . $title . ', isbn ' . $isbn
+        ], 200);
+    }
+
+    /**
+     * Store book cover image
+     */
+    protected function storeCoverImage(Request $request, Book $book) {
+        $slug = $book->slug;
+        $image = $request->file('cover_image');
+        $filename = 'cover-' . $slug . "-" . now()->format('YmdHis') . ".webp";
+        $path = 'images/books/';
+
+        $this->imageService->storeImage(
+            $image,
+            $filename,
+            $path,
+            75,
+        );
+
+        $book = Book::find($book->isbn());
+        Log::info(['cover_image_url' => asset($path . $filename)]);
+        $book->update([
+            'cover_image_url' => asset($path . $filename)
+        ]);
+    }
+
+    /**
+     * Delete book cover image
+     */
+    protected function deleteCoverImage(Book $book) {
         $url = $book->coverImageUrl();
         $relativePath = Str::after($url, config('app.url') . '/');
         $oldPath = public_path($relativePath);
@@ -161,11 +249,8 @@ class BookController extends Controller {
             unlink($oldPath);
         }
 
-        $book->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully deleted book ' . $title . ', isbn ' . $isbn
-        ], 200);
+        $book->update([
+            'cover_image_url' => null
+        ]);
     }
 }

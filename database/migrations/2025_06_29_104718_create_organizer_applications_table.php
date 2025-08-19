@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::create('organizer_applications', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->string('organizer_application_id', 14)->primary();
             $table->string('user_id', 14);
             $table->enum('status', [
                 'pending',

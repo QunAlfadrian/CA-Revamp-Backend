@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\Role;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Services\SearchService;
 use App\Models\OrganizerApplication;
+use App\Http\Services\PaginateService;
 use App\Http\Resources\V1\OrganizerApplicationResource;
 use App\Http\Resources\V1\OrganizerApplicationCollection;
-use App\Http\Services\PaginateService;
-use App\Http\Services\SearchService;
 
 class OrganizerApplicationController extends Controller {
     public function __construct(
@@ -82,31 +85,43 @@ class OrganizerApplicationController extends Controller {
     public function store(Request $request) {
         $user = auth()->user();
 
-        // check if user have not filled their identity
-        if (is_null($user->identity())) {
+        DB::beginTransaction();
+
+        try {
+            // check if user have not filled their identity
+            if (is_null($user->identity())) {
+                return response()->json([
+                    'error' => "identities",
+                    'message' => 'Please complete your identity information before applying'
+                ], 403);
+            }
+
+            // check if user already applying application
+            if (!is_null($user->organizerApplication())) {
+                return response()->json([
+                    'error' => "organizer_applications",
+                    'message' => 'Can only have one active Application'
+                ], 403);
+            }
+
+            $user->organizerApplicationRelation()->create([]);
+            $user->refresh();
+
+            DB::commit();
             return response()->json([
-                'error' => true,
-                'message' => 'Please complete your identity information before applying'
-            ], 403);
-        }
-
-        // check if user already applying application
-        if (!is_null($user->organizerApplication())) {
+                'success' => true,
+                'data' => $user->organizerApplication()
+                    ? OrganizerApplicationResource::make($user->organizerApplication())
+                    : null
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error($e);
             return response()->json([
-                'error' => true,
-                'message' => 'Can only have one active Application'
-            ], 403);
+                'error' => $e->getMessage(),
+                'message' => "Internal Server Error"
+            ], 500);
         }
-
-        $user->organizerApplicationRelation()->create([]);
-        $user->refresh();
-
-        return response()->json([
-            'success' => true,
-            'data' => $user->organizerApplication()
-                ? OrganizerApplicationResource::make($user->organizerApplication())
-                : null
-        ], 200);
     }
 
     /**
