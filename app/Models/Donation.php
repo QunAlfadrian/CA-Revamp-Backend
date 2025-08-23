@@ -37,7 +37,7 @@ class Donation extends Model {
                 ->first();
 
             if ($latestDonation) {
-                $latestID = hexdec(substr($campaign->id(), -4));
+                $latestID = hexdec(substr($latestDonation->id(), -5));
                 $nextID = $latestID + 1;
             } else {
                 $nextID = 1;
@@ -62,7 +62,7 @@ class Donation extends Model {
     }
 
     public function id(): string {
-        return (string)$this->donationd_id;
+        return (string)$this->donation_id;
     }
 
     public function donorName(): ?string {

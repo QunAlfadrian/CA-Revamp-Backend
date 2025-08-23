@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait HasDonor {
-    public function donor(): User {
+    public function donor(): ?User {
         return $this->donorRelation;
     }
 

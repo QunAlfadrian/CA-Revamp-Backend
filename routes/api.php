@@ -98,8 +98,12 @@ Route::group([
     Route::get('/organizer/campaigns/trashed', [CampaignController::class, 'organizerTrashed'])->name('organizer.campaigns.trashed');
     Route::put('/organizer/campaigns/trashed/{id}', [CampaignController::class, 'restore'])->name('organizer.campaigns.restore');
 
+    // List Donation per Campaign
+    Route::get('/organizer/{campaign}/donations', [DonationController::class, 'donationByCampaign'])->name('organizer.campaigns.donations.index');
+
     /** DONOR */
     Route::get('/donor/donations', [DonationController::class, 'index'])->name('donations.index');
+    Route::get('/donor/donations/{donation}', [DonationController::class, 'index'])->name('donations.');
 
     /** ADMIN */
     // organizer application

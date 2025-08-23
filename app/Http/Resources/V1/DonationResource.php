@@ -22,7 +22,9 @@ class DonationResource extends JsonResource {
                 'verified_at' => $this->verifiedAt()
             ],
             'relationships' => [
-                'donor' => UserSummaryResource::make($this->donor()),
+                'donor' => $this->donor()
+                    ? UserSummaryResource::make($this->donor())
+                    : $this->donorName(),
                 'campaign' => [
                     'type' => 'campaigns',
                     'id' => $campaign->id(),

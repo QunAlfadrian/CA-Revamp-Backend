@@ -86,6 +86,10 @@ class Campaign extends Model {
         return $this->campaign_id;
     }
 
+    public function organizerId(): string {
+        return $this->organizer_id;
+    }
+
     public function type(): string {
         return $this->type;
     }
