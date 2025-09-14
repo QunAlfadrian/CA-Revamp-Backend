@@ -2,29 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\V1\RoleResource;
+use App\Http\Resources\V1\UserCollection;
 use App\Http\Resources\V1\UserResource;
 use App\Http\Resources\V1\UserSummaryResource;
 
 class UserController extends Controller {
-    /**
-     * Handle the incoming request.
-     */
-    // public function __invoke(Request $request) {
-    //     $user = auth()->user();
-    //     return response()->json([
-    //         'success' => true,
-    //         'data' => [
-    //             'user' => [
-    //                 'name' => $user->name(),
-    //                 'email' => $user->email()
-    //             ],
-    //             'roles' => RoleResource::collection($user->roles())
-    //         ]
-    //     ], 200);
-    // }
+    public function adminIndex(Request $request) {
+        $user = auth()->user();
+
+        if (!$user || !$user->isActingAs(Role::admin()) || !$user->isActingAs(Role::superAdmin())) {
+            return response()->json([
+                'error' => 'unauthorized',
+                'message' => 'You do not have permission to access this resource'
+            ], 403);
+        }
+
+        $query = User::query();
+
+        $perPage = 10;
+        if ($request->filled('per_page')) {
+            $perPage = $request->input('per_page');
+        }
+
+        return new UserCollection($query->paginate($perPage));
+    }
 
     public function show(Request $request, User $user) {
         return response()->json([
@@ -32,6 +37,6 @@ class UserController extends Controller {
             'data' => [
                 'user' => UserSummaryResource::make($user)
             ]
-        ]);
+        ], 200);
     }
 }

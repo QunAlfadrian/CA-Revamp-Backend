@@ -64,7 +64,6 @@ class BookController extends Controller {
                 $query->orWhere($field, 'like', '%' . $term . '%');
             }
         }
-        Log::info($query);
 
         try {
             $collection = new BookCollection($query->paginate(10));
@@ -198,7 +197,7 @@ class BookController extends Controller {
                 'message' => 'You do not have permission to access this resource'
             ], 403);
         }
-        
+
         // get data for response
         $title = $book->title();
         $isbn = $book->isbn();

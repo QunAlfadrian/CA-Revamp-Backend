@@ -249,7 +249,7 @@ class CampaignController extends Controller {
 
         $query = Campaign::query();
         $query->whereHas('organizerRelation', function ($q) use ($user) {
-            $q->where('id', $user->id());
+            $q->where('user_id', $user->id());
         });
 
         // filter type

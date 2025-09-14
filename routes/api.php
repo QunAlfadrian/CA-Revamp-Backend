@@ -106,6 +106,9 @@ Route::group([
     Route::get('/donor/donations/{donation}', [DonationController::class, 'index'])->name('donations.');
 
     /** ADMIN */
+    // users
+    Route::get('/admin/users', [UserController::class, 'adminIndex'])->name("users.index.admin");
+    
     // organizer application
     Route::get('/admin/applications', [OrganizerApplicationController::class, 'index'])->name('organizer_applications.index');
     Route::post('/admin/applications/review', [OrganizerApplicationController::class, 'update'])->name('organizer_applications.review');

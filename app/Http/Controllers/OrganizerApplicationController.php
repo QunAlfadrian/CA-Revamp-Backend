@@ -157,7 +157,7 @@ class OrganizerApplicationController extends Controller {
         }
 
         $rules = [
-            'id' => 'bail|required|exists:organizer_applications,id',
+            'id' => 'bail|required|exists:organizer_applications,organizer_application_id',
             'status' => 'bail|required',
             'message' => 'sometimes|max:255'
         ];

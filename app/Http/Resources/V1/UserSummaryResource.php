@@ -16,7 +16,10 @@ class UserSummaryResource extends JsonResource {
             'type' => 'users',
             'id' => $this->id(),
             'attributes' => [
-                'name' => $this->name()
+                'name' => $this->name(),
+                'profile_image_url' => $this->identity()
+                    ? $this->identity()->profileImageUrl()
+                    : ""
             ]
         ];
     }

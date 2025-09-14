@@ -10,4 +10,7 @@ Route::get('/', function () {
     ];
 });
 
+Route::get('/sanctum/csrf-cookie', \Laravel\Sanctum\Http\Controllers\CsrfCookieController::class.'@show');
+
+
 // require __DIR__.'/auth.php';
