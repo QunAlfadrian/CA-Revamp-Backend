@@ -17,6 +17,7 @@ class CampaignResource extends JsonResource {
             'type' => 'campaigns',
             'id' => $this->id(),
             'attributes' => [
+                'campaign_type' => $this->type(),
                 'title' => $this->title(),
                 'slug' => $this->slug(),
                 'description' => $this->description(),
@@ -33,7 +34,7 @@ class CampaignResource extends JsonResource {
                 'organizer' => UserSummaryResource::make($this->organizer()),
                 'reviewer' => UserSummaryResource::make($this->reviewer()),
                 'requested_items' => $this->type() == 'product_donation' ? [
-                    'books' => BookResource::collection($this->books()),
+                    'books' => RequestedBookResource::collection($this->books()),
                     'supplies' => SupplyResource::collection($this->requestedSupplies())
                 ] : null
             ],

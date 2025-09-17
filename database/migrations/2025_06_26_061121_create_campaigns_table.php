@@ -18,7 +18,7 @@ return new class extends Migration {
             ])->default('fundraiser');
             $table->string('title', 255)->unique();
             $table->string('slug', 15)->unique();
-            $table->text('description');
+            $table->longText('description');
             $table->text('header_image_url')->nullable()->default(null);
             $table->enum('status', [
                 'pending',

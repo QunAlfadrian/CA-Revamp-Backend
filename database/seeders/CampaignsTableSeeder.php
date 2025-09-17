@@ -42,7 +42,7 @@ class CampaignsTableSeeder extends Seeder {
             'title' => 'kyuib donasi',
             'slug' => 'kybdonasi',
             'description' => fake()->paragraphs(4, true),
-            'header_image_url' => 'https://github.com/',
+            'header_image_url' => 'https://arkwaifu.cc/api/v1/arts/27_i33/variants/origin/content',
         ]);
 
         $prod = Campaign::where('slug', 'kybdonasi')->first();

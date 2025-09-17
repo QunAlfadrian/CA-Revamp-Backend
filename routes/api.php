@@ -13,7 +13,9 @@ use App\Http\Controllers\IdentityController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\OrganizerApplicationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\DonatedItemController;
 use App\Http\Controllers\DonationController;
+use App\Http\Controllers\FundController;
 use App\Http\Controllers\MidtransController;
 
 Route::group([
@@ -41,6 +43,8 @@ Route::group([
     // Campaigns
     Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
     Route::get('/campaigns/{campaign}', [CampaignController::class, 'show'])->name('campaigns.show');
+    Route::get('/campaigns/{campaign}/funds', [FundController::class, 'indexByCampaign'])->name('campaigns.funds.show');
+    Route::get('/campaigns/{campaign}/items', [DonatedItemController::class, 'indexByCampaign'])->name('campaigns.items.show');
 
     // Donate to campaigns
     Route::post('/campaigns/{campaign}/donations', [DonationController::class, 'store'])->name('campaigns.donations.store');
@@ -101,14 +105,20 @@ Route::group([
     // List Donation per Campaign
     Route::get('/organizer/{campaign}/donations', [DonationController::class, 'donationByCampaign'])->name('organizer.campaigns.donations.index');
 
+    // List Donated Items per donations
+    Route::get('/organizer/donations/{donation}/donated-items', [DonatedItemController::class, 'indexByDonation'])->name('organizer.donations.donated_items');
+    Route::get('/organizer/donated-items/{donatedItem}', [DonatedItemController::class, 'show'])->name('organizer.donated_items.show');
+    Route::post('/organizer/donated-items/{donatedItem}/verify', [DonatedItemController::class, 'verify'])->name('organizer.donated_items.verify');
+    Route::post('/organizer/donated-items/{donatedItem}', [DonatedItemController::class, 'updateStatus'])->name('organizer.donated_items.update_status');
+
     /** DONOR */
     Route::get('/donor/donations', [DonationController::class, 'index'])->name('donations.index');
-    Route::get('/donor/donations/{donation}', [DonationController::class, 'index'])->name('donations.');
+    Route::get('/donor/donations/{donation}', [DonationController::class, 'index'])->name('donations.show');
 
     /** ADMIN */
     // users
     Route::get('/admin/users', [UserController::class, 'adminIndex'])->name("users.index.admin");
-    
+
     // organizer application
     Route::get('/admin/applications', [OrganizerApplicationController::class, 'index'])->name('organizer_applications.index');
     Route::post('/admin/applications/review', [OrganizerApplicationController::class, 'update'])->name('organizer_applications.review');

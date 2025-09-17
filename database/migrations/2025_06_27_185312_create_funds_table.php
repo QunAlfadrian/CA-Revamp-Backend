@@ -11,8 +11,6 @@ return new class extends Migration {
      */
     public function up(): void {
         Schema::create('funds', function (Blueprint $table) {
-            // $table->uuid('id')->primary();
-            // $table->string('fund_id')->primary();
             $table->string('fund_id', 25)->primary();
             $table->string('campaign_id', 15);
             $table->string('donation_id', 19);

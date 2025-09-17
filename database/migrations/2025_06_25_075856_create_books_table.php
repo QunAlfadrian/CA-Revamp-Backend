@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->string('author_3', 255)->nullable()->default(null);
             $table->string('published_year', 4);
             $table->text('cover_image_url')->nullable()->default(null);
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 10, 0);
             $table->timestamps();
         });
     }

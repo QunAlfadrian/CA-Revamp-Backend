@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\V1\FundCollection;
 use Exception;
 use App\Models\Campaign;
 use App\Models\Donation;
@@ -9,6 +10,8 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\MidtransService;
+use App\Models\Fund;
+use Illuminate\Support\Facades\Log;
 
 class FundController extends Controller {
     /**
@@ -16,6 +19,23 @@ class FundController extends Controller {
      */
     public function index(Request $request, Donation $donation) {
 
+    }
+
+    /**
+     * Display listing of the resource by Campaign
+     */
+    public function indexByCampaign(Request $request, Campaign $campaign) {
+        $query = Fund::query();
+
+        $query->whereHas('campaignRelation', function ($q) use ($campaign) {
+            $q->where('campaign_id', $campaign->id());
+        });
+
+        if ($request->filled("status")) {
+            $query->where('status', $request->input('status'));
+        }
+
+        return new FundCollection($query->orderBy('updated_at', 'desc')->paginate(10));
     }
 
     /**
@@ -33,7 +53,13 @@ class FundController extends Controller {
         DB::beginTransaction();
         try {
             // get or create donation instance
-            $username = $user ? $user->name() : $request->input('username');
+            $username = $user
+                ? $user->name()
+                : (
+                    $request->filled('username')
+                    ? $request->input('username')
+                    : "Kind Donor"
+                );
             if ($user) {
                 $donation = $campaign->donationsRelation()
                 ->whereHas('donorRelation', function ($q) use ($username) {
@@ -110,7 +136,7 @@ class FundController extends Controller {
                     ]
                 ],
                 'callbacks' => [
-                    'finish' => request()->header('X-Previous-URL') ?? url('/'),
+                    'finish' => config('app.frontend_url') . "/campaigns/" . $campaign->slug() ?? url('/'),
                 ]
             ];
 
@@ -138,6 +164,7 @@ class FundController extends Controller {
             ], 200);
         } catch (Exception $e) {
             DB::rollBack();
+            Log::error($e);
             return response()->json([
                 "message" => $e->getMessage(),
                 "error" => "Internal server error",

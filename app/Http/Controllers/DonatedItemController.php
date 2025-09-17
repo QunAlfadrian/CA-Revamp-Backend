@@ -4,13 +4,20 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Book;
+use App\Models\Role;
 use App\Models\Campaign;
+use App\Models\Donation;
+use App\Models\DonatedItem;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\RequestedSupply;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\ImageService;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\V1\DonatedItemCollection;
+use App\Http\Resources\V1\DonatedItemResource;
+use App\Http\Resources\V1\DonatedItemSummaryCollection;
+use App\Models\RequestedBook;
 
 class DonatedItemController extends Controller {
     public function __construct(private ImageService $imageService) {
@@ -21,6 +28,36 @@ class DonatedItemController extends Controller {
      */
     public function index() {
         //
+    }
+
+    /**
+     * Display a listing of the resource by campaign
+     */
+    public function indexByCampaign(Request $request, Campaign $campaign) {
+        $query = DonatedItem::query();
+
+        $query->whereHas('campaignRelation', function ($q) use ($campaign) {
+            $q->where('campaign_id', $campaign->id());
+        });
+
+        if ($request->filled("status")) {
+            $query->where('status', $request->input('status'));
+        }
+
+        return new DonatedItemSummaryCollection(($query->orderBy('updated_at', 'desc')->paginate(10)));
+    }
+
+    /**
+     * Display a listing of the resource by donations
+     */
+    public function indexByDonation(Request $request, Donation $donation) {
+        $query = DonatedItem::query();
+
+        $query->whereHas('donationRelation', function ($q) use ($donation) {
+            $q->where('donation_id', $donation->id());
+        });
+
+        return new DonatedItemCollection($query->paginate(10));
     }
 
     /**
@@ -144,8 +181,124 @@ class DonatedItemController extends Controller {
     /**
      * Display the specified resource.
      */
-    public function show(string $id) {
-        //
+    public function show(DonatedItem $donatedItem) {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'error' => 'unauthorized',
+                'message' => 'You do not have permission to access this resource'
+            ], 403);
+        }
+
+        $hasDonor = $donatedItem->donation()->donor() ? true : false;
+        $donation = $donatedItem->donation();
+        $campaign = $donatedItem->campaign();
+        if (!(
+            $user->matches($campaign->organizer())
+            || ($hasDonor && $user->matches($donation->donor()))
+        )) {
+            return response()->json([
+                'error' => 'unauthorized',
+                'message' => 'You do not have permission to access this resource'
+            ], 403);
+        }
+
+        return (new DonatedItemResource($donatedItem))
+            ->response()
+            ->setStatusCode(200);
+    }
+
+    /**
+     * verify the resource
+     */
+    public function verify(Request $request, DonatedItem $donatedItem) {
+        $user = auth()->user();
+
+        $organizer = $donatedItem->campaign()->organizer();
+        if (!$user || !$user->matches($organizer)) {
+            return response()->json([
+                'error' => 'unauthorized',
+                'message' => 'You do not have permission to access this resource'
+            ], 403);
+        }
+
+        $donatedItem->update([
+            'status' => 'on_delivery'
+        ]);
+        $donatedItem->refresh();
+
+        return (new DonatedItemResource($donatedItem))
+            ->response()
+            ->setStatusCode(200);
+    }
+
+    public function updateStatus(Request $request, DonatedItem $donatedItem) {
+        $user = auth()->user();
+
+        $organizer = $donatedItem->campaign()->organizer();
+        if (!$user || !$user->matches($organizer)) {
+            return response()->json([
+                'error' => 'unauthorized',
+                'message' => 'You do not have permission to access this resource'
+            ], 403);
+        }
+
+        $request->validate([
+            'status' => 'required|string|in:received,not_received,cancelled,declined',
+        ]);
+
+        $donatedItem->update([
+            'status' => $request->input('status')
+        ]);
+        $donatedItem->refresh();
+
+        if ($donatedItem->status() === 'received') {
+            $campaign = $donatedItem->campaign();
+            $campaign->update([
+                'donated_item_quantity' => (int)$campaign->donatedItemQuantity() + (int)$donatedItem->quantity()
+            ]);
+
+            $donatedBooks = $donatedItem->books();
+            foreach ($donatedBooks as $book) {
+                $requested = RequestedBook::where(
+                    'campaign_id',
+                    $campaign->campaign_id
+                )->where(
+                    'book_id',
+                    $book->isbn
+                )->first();
+
+                if ($requested) {
+                    RequestedBook::where('campaign_id', $campaign->campaign_id)
+                        ->where('book_id', $book->isbn)
+                        ->update([
+                            'donated_quantity' => (int) $requested->donatedQuantity() + (int) $book->pivot->quantity,
+                        ]);
+                }
+            }
+
+            $donatedSupplies = $donatedItem->requestedSupplies();
+            foreach ($donatedSupplies as $supply) {
+                $requested = RequestedSupply::where(
+                    'campaign_id',
+                    $campaign->id()
+                )->where(
+                    'requested_supply_id',
+                    $supply->id()
+                )->first();
+
+                if ($requested) {
+                    $requested->update([
+                        'donated_quantity' => (int)$requested->donatedQuantity() + (int)$supply->pivot->quantity
+                    ]);
+                }
+            }
+        }
+
+        return (new DonatedItemResource($donatedItem))
+            ->response()
+            ->setStatusCode(200);
     }
 
     /**

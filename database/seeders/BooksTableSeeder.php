@@ -45,7 +45,7 @@ class BooksTableSeeder extends Seeder {
                 'author_2' => random_int(0, 1) == 0 ? null : fake()->name(),
                 'published_year' => fake()->year(),
                 'cover_image_url' => 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1492877223i/28952640.jpg',
-                'price' => random_int(60, 105) * 10000,
+                'price' => random_int(60, 105) * 1000,
             ]);
 
             $count++;

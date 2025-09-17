@@ -60,4 +60,8 @@ class Fund extends Model {
     public function redirectUrl(): string {
         return $this->redirect_url;
     }
+
+    public function updatedAt(): string {
+        return (string)$this->updated_at;
+    }
 }

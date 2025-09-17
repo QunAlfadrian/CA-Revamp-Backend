@@ -147,7 +147,7 @@ class DonationController extends Controller {
         $user = auth('sanctum')->user();
         if (!$user) {
             $rules += [
-                'username' => 'required|string|min:5|max:25',
+                'username' => 'string|min:5|max:25',
             ];
         }
         $request->validate($rules);
@@ -173,8 +173,8 @@ class DonationController extends Controller {
     /**
      * Display the specified resource.
      */
-    public function show(string $id) {
-        //
+    public function show(Campaign $campaign, Donation $donation) {
+        
     }
 
     /**

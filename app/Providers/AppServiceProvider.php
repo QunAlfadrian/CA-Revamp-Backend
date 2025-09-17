@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\Book;
 use App\Models\User;
 use App\Models\Campaign;
+use App\Models\DonatedItem;
+use App\Models\Donation;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -47,6 +49,14 @@ class AppServiceProvider extends ServiceProvider {
             return Book::where('isbn', $value)
                 ->orWhere('slug', $value)
                 ->firstOrFail();
+        });
+
+        Route::bind('donation', function ($value) {
+            return Donation::findOrFail($value);
+        });
+
+        Route::bind('donatedItem', function ($value) {
+            return DonatedItem::findOrFail($value);
         });
     }
 }

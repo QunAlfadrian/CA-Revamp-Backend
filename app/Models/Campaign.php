@@ -9,6 +9,7 @@ use App\Traits\HasOrganizer;
 use App\Traits\ModelHelpers;
 use App\Traits\HasManyDonations;
 use App\Traits\CampaignBelongsToManyBooks;
+use App\Traits\CampaignHasManyFunds;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasManyRequestedSupplies;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -22,7 +23,7 @@ class Campaign extends Model {
     /** Relation Helpers */
     use HasOrganizer;
     use HasReviewer;
-    use HasManyFunds;
+    use CampaignHasManyFunds;
     use HasManyDonations;
     use CampaignBelongsToManyBooks;
     use HasManyRequestedSupplies;

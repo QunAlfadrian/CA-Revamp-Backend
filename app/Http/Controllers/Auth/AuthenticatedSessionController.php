@@ -27,7 +27,7 @@ class AuthenticatedSessionController extends Controller {
             'data' => [
                 'token' => $user->createToken($user->name())->plainTextToken,
                 'user' => [
-                    'username' => $user->name(),
+                    'name' => $user->name(),
                     'email' => $user->email(),
                     'profile_image' => $user->identity() ? $user->identity()->profileImageUrl() : null,
                     'roles' => RoleResource::collection($user->roles())

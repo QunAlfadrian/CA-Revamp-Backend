@@ -95,7 +95,7 @@ class CampaignController extends Controller {
         $rules = [
             'attributes.title' => 'required|string|min:10|max:255|unique:campaigns,title',
             'attributes.slug' => 'nullable|string|min:7|max:50|unique:campaigns,slug',
-            'attributes.description' => 'required|string|min:20|max:2500',
+            'attributes.description' => 'required|string|min:20|max:5000',
             'attributes.header_image' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
         ];
         $request->validate($rules);
@@ -105,8 +105,6 @@ class CampaignController extends Controller {
         }
 
         if ($request->input('type') === 'product_donation') {
-            // $rules['requested_fund_amount'] = 'required|numeric|min:50000|max:9999999999';
-            // $rules['requested_item_quantity'] = 'required|integer|min:1';
             return app(ProductDonationController::class)->store($request);
         }
 
